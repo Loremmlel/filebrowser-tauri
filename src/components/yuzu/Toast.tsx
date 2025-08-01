@@ -30,6 +30,6 @@ export const ToastContainer: React.FC<{ children: React.ReactNode }> = ({
 
 export const toast = {
   show: (message: string, duration?: number) => {
-    useToastStore().showToast(message, duration);
+    useToastStore.getState().showToast(message, duration);
   },
 };
