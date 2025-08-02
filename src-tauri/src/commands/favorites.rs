@@ -1,9 +1,7 @@
 use tauri::command;
 
-use crate::models::{
-    favorite::{AddFileToFavoriteRequest, FavoriteDto, FavoriteFileDto},
-};
-use crate::services::api_service::{api_get, api_post_success, api_delete_success};
+use crate::models::favorite::{AddFileToFavoriteRequest, FavoriteDto, FavoriteFileDto};
+use crate::services::api_service::{api_delete_success, api_get, api_post_success};
 
 #[command]
 pub async fn get_favorites(server_url: String) -> Result<Vec<FavoriteDto>, String> {
