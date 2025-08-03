@@ -19,10 +19,7 @@ class FavoriteService {
     }
   }
 
-  async addFileToFavorite(
-    request: AddFileToFavoriteRequest,
-    favoriteId: number
-  ): Promise<boolean> {
+  async addFileToFavorite(request: AddFileToFavoriteRequest, favoriteId: number): Promise<boolean> {
     try {
       const result = await invoke<boolean>('add_file_to_favorite', {
         request,

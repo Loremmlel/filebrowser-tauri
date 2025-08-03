@@ -1,8 +1,5 @@
 import { FileInfo, FileType } from '@/types/files'
-import {
-  HeartIcon,
-  HeartIcon as HeartSolidIcon,
-} from '@heroicons/react/24/outline'
+import { HeartIcon, HeartIcon as HeartSolidIcon } from '@heroicons/react/24/outline'
 import {
   ArrowDownTrayIcon,
   DocumentIcon,
@@ -53,16 +50,10 @@ export const FileItem: React.FC<FileItemProps> = ({
         <button
           onClick={() => onFavoriteToggle(!isFavorite, file)}
           className={`p-1 rounded-full transition-colors ${
-            isFavorite
-              ? 'text-red-500 hover:bg-red-50'
-              : 'text-gray-500 hover:bg-gray-50'
+            isFavorite ? 'text-red-500 hover:bg-red-50' : 'text-gray-500 hover:bg-gray-50'
           }`}
         >
-          {isFavorite ? (
-            <HeartSolidIcon className='w-5 h-5' />
-          ) : (
-            <HeartIcon className='w-5 h-5' />
-          )}
+          {isFavorite ? <HeartSolidIcon className='w-5 h-5' /> : <HeartIcon className='w-5 h-5' />}
         </button>
 
         {onDownload != null && !file.isDirectory && (
@@ -98,9 +89,7 @@ export const FileItem: React.FC<FileItemProps> = ({
         </div>
 
         <div className='text-center'>
-          <p className='text-sm font-medium text-gray-900 truncate max-w-full'>
-            {file.name}
-          </p>
+          <p className='text-sm font-medium text-gray-900 truncate max-w-full'>{file.name}</p>
           {!file.isDirectory && (
             <p className='text-xs text-gray-500'>{formatFileSize(file.size)}</p>
           )}
@@ -112,9 +101,7 @@ export const FileItem: React.FC<FileItemProps> = ({
         <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
           <div className='bg-white rounded-lg p-6 max-w-sm mx-4'>
             <h3 className='text-lg font-medium text-gray-900 mb-2'>确认删除</h3>
-            <p className='text-gray-600 mb-4'>
-              确定要删除 {file.name} 吗？此操作无法撤销
-            </p>
+            <p className='text-gray-600 mb-4'>确定要删除 {file.name} 吗？此操作无法撤销</p>
             <div className='flex space-x-3'>
               <button
                 onClick={() => setShowDeleteConfirm(false)}

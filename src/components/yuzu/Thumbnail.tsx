@@ -51,9 +51,7 @@ export const Thumbnail: React.FC<ThumbnailProps> = ({ file, className }) => {
   if (error || thumbnailUrl == null) {
     const Icon = file.type === FileType.Image ? PhotoIcon : VideoCameraIcon
     return (
-      <div
-        className={`${className} flex items-center justify-center bg-gray-100 rounded`}
-      >
+      <div className={`${className} flex items-center justify-center bg-gray-100 rounded`}>
         <Icon className='w-8 h-8 text-gray-400' />
       </div>
     )

@@ -41,6 +41,19 @@ export default tseslint.config(
       'quotes': ['error', 'single'],
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/explicit-function-return-type': 'off',
+      'max-len': [
+        'error',
+        {
+          code: 100,
+          tabWidth: 2,
+          ignoreUrls: true,
+          ignoreStrings: true,
+          ignoreTemplateLiterals: true,
+          ignoreRegExpLiterals: true,
+          ignoreComments: false,
+          ignoreTrailingComments: true,
+        },
+      ],
     },
   },
 )
