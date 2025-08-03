@@ -90,7 +90,7 @@ export const FileItem: React.FC<FileItemProps> = ({
           )}
         </div>
 
-        <div className='text-center'>
+        <div className='text-center w-full'>
           <p className='text-sm font-medium text-gray-900 truncate max-w-full'>{file.name}</p>
           {!file.isDirectory && (
             <p className='text-xs text-gray-500'>{formatFileSize(file.size)}</p>
