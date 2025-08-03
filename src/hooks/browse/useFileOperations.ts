@@ -8,21 +8,21 @@ import { toast } from '@/utils/toast'
  * 封装了文件点击、导航、下载、删除等操作逻辑
  */
 export const useFileOperations = () => {
-  const { paths: currentPath, setCurrentPath, setPreviewItem } = useBrowseStore()
+  const { path, setPath, setPreviewItem } = useBrowseStore()
 
   // 处理面包屑导航
   const handleBreadCrumbNavigate = (targetIndex: number) => {
     if (targetIndex === 0) {
-      setCurrentPath([])
+      setPath([])
     } else {
-      setCurrentPath(currentPath.slice(0, targetIndex))
+      setPath(path.slice(0, targetIndex))
     }
   }
 
   // 处理文件点击
   const handleFileClick = (file: FileInfo) => {
     if (file.isDirectory) {
-      setCurrentPath([...currentPath, { name: file.name, id: file.name }])
+      setPath([...path, { name: file.name, id: file.name }])
     } else if (file.type === FileType.Image || file.type === FileType.Video) {
       setPreviewItem(file)
     }

@@ -6,7 +6,7 @@ import { create } from 'zustand'
 interface BrowseState {
   files: FileInfo[]
   loading: boolean
-  paths: BreadCrumbItem[]
+  path: BreadCrumbItem[]
 
   previewItem: FileInfo | null
 
@@ -20,7 +20,7 @@ interface BrowseState {
 interface BrowseStore extends BrowseState {
   setFiles: (files: FileInfo[]) => void
   setLoading: (loading: boolean) => void
-  setCurrentPath: (path: BreadCrumbItem[]) => void
+  setPath: (path: BreadCrumbItem[]) => void
   setPreviewItem: (item: FileInfo | null) => void
 
   setFavorites: (favorites: FavoriteDto[]) => void
@@ -36,7 +36,7 @@ interface BrowseStore extends BrowseState {
 export const useBrowseStore = create<BrowseStore>((set, get) => ({
   files: [],
   loading: false,
-  paths: [],
+  path: [],
   previewItem: null,
   favorites: [],
   favoriteFilesMap: new Map(),
@@ -45,7 +45,7 @@ export const useBrowseStore = create<BrowseStore>((set, get) => ({
 
   setFiles: files => set({ files }),
   setLoading: loading => set({ loading }),
-  setCurrentPath: paths => set({ paths }),
+  setPath: path => set({ path }),
   setPreviewItem: previewItem => set({ previewItem }),
   setFavorites: favorites => set({ favorites }),
   setFavoriteFilesMap: favoriteFilesMap => set({ favoriteFilesMap }),
@@ -53,8 +53,8 @@ export const useBrowseStore = create<BrowseStore>((set, get) => ({
   setSupportHevc: supportHevc => set({ supportHevc }),
 
   requestPath: () => {
-    const { paths } = get()
-    return `/${paths.map(item => item.name).join('/')}`
+    const { path } = get()
+    return `/${path.map(item => item.name).join('/')}`
   },
 
   isFileFavorite: filePath => {

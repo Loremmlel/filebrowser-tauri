@@ -8,10 +8,14 @@ import { useFileOperations } from '@/hooks/browse/useFileOperations'
 import { useImagePreview } from '@/hooks/browse/useImagePreview'
 import { useBrowseStore } from '@/stores/browseStore'
 import { FileInfo, FileType } from '@/types/files'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 export const BrowsePage: React.FC = () => {
-  const { paths: currentPath, currentFavoriteFile, setCurrentFavoriteFile } = useBrowseStore()
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const { path, currentFavoriteFile, setCurrentFavoriteFile, setPath, setPreviewItem } =
+    useBrowseStore()
   const [showAddToFavoritesModal, setShowAddToFavoritesModal] = useState(false)
 
   const { files, loading, loadFiles, loadFavorites } = useBrowseData()
@@ -21,7 +25,35 @@ export const BrowsePage: React.FC = () => {
     useFavoriteOperations()
   const { previewItem, handleImageNavigation, handleClosePreview } = useImagePreview()
 
-  const onAddToFavorites = async (favoriteId: number) => {
+  // 处理URL参数
+  useEffect(() => {
+    const pathParam = searchParams.get('path')
+    const previewParam = searchParams.get('preview')
+
+    // 处理路径参数
+    if (pathParam && pathParam !== '/') {
+      const pathParts = pathParam.split('/').filter(part => part.length > 0)
+      const breadcrumbPath = pathParts.map(part => ({ name: part, id: part }))
+      setPath(breadcrumbPath)
+    }
+
+    // 处理预览参数
+    if (previewParam && files.length > 0) {
+      const previewFile = files.find(file => file.name === previewParam)
+      if (
+        previewFile &&
+        (previewFile.type === FileType.Image || previewFile.type === FileType.Video)
+      ) {
+        setPreviewItem(previewFile)
+      }
+    }
+
+    if (pathParam || previewParam) {
+      setSearchParams({})
+    }
+  }, [files, searchParams, setPath, setPreviewItem, setSearchParams])
+
+  async function onAddToFavorites(favoriteId: number) {
     if (!currentFavoriteFile) return
 
     await handleAddToFavorites(currentFavoriteFile, favoriteId, () => {
@@ -31,13 +63,13 @@ export const BrowsePage: React.FC = () => {
     })
   }
 
-  const onDelete = (file: FileInfo) => {
+  function onDelete(file: FileInfo) {
     handleDelete(file, () => loadFiles()) // 删除成功后重新加载文件列表
   }
   return (
     <div className='flex flex-col h-full bg-gray-50'>
       {/* 面包屑导航 */}
-      <BreadCrumb path={currentPath} onNavigate={handleBreadCrumbNavigate} />
+      <BreadCrumb path={path} onNavigate={handleBreadCrumbNavigate} />
 
       {/* 文件列表 */}
       <div className='flex-1 overflow-auto p-4'>

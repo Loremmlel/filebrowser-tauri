@@ -12,7 +12,7 @@ export const useBrowseData = () => {
   const {
     files,
     loading,
-    paths: currentPath,
+    path,
     setFiles,
     setLoading,
     setFavorites,
@@ -62,7 +62,7 @@ export const useBrowseData = () => {
   // 监听路径变化，重新加载文件
   useEffect(() => {
     loadFiles()
-  }, [currentPath, loadFiles])
+  }, [path, loadFiles])
 
   return {
     files,
