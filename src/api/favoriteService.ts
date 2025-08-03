@@ -47,9 +47,9 @@ class FavoriteService {
     return files
   }
 
-  async deleteFavoriteFile(favoriteFileId: number): Promise<boolean> {
+  async deleteFavoriteFile(id: number): Promise<boolean> {
     const result = await invoke<boolean>('delete_favorite_file', {
-      favoriteFileId,
+      id,
       serverUrl: this.getServerUrl(),
     })
     return result

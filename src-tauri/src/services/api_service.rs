@@ -20,8 +20,39 @@ fn build_url(base_url: &str, endpoint: &str) -> String {
     }
 }
 
+/// 检查响应状态码并处理错误
+async fn handle_response_error(response: Response) -> Result<Response, ApiError> {
+    if !response.status().is_success() {
+        let status_code = response.status().as_u16();
+
+        // 尝试解析响应体中的错误信息
+        let error_message = match response.text().await {
+            Ok(text) => {
+                // 尝试解析为 JSON 并提取 message 字段
+                match serde_json::from_str::<serde_json::Value>(&text) {
+                    Ok(json) => json
+                        .get("message")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or(&text)
+                        .to_string(),
+                    Err(_) => text,
+                }
+            }
+            Err(_) => format!("请求失败，状态码: {}", status_code),
+        };
+
+        return Err(ApiError::new(status_code, error_message));
+    }
+
+    Ok(response)
+}
+
 /// 发送请求并获取原始响应
-async fn send_request(base_url: &str, method: Method, endpoint: &str) -> Result<Response, ApiError> {
+async fn send_request(
+    base_url: &str,
+    method: Method,
+    endpoint: &str,
+) -> Result<Response, ApiError> {
     let url = build_url(base_url, endpoint);
     let client = get_client();
 
@@ -38,31 +69,7 @@ async fn send_request(base_url: &str, method: Method, endpoint: &str) -> Result<
         .await
         .map_err(|e| ApiError::network(format!("发送请求失败: {}", e)))?;
 
-    // 检查状态码，如果不是成功状态码，尝试解析错误信息
-    if !response.status().is_success() {
-        let status_code = response.status().as_u16();
-        
-        // 尝试解析响应体中的错误信息
-        let error_message = match response.text().await {
-            Ok(text) => {
-                // 尝试解析为 JSON 并提取 message 字段
-                match serde_json::from_str::<serde_json::Value>(&text) {
-                    Ok(json) => {
-                        json.get("message")
-                            .and_then(|v| v.as_str())
-                            .unwrap_or(&text)
-                            .to_string()
-                    }
-                    Err(_) => text,
-                }
-            }
-            Err(_) => format!("请求失败，状态码: {}", status_code),
-        };
-
-        return Err(ApiError::new(status_code, error_message));
-    }
-
-    Ok(response)
+    handle_response_error(response).await
 }
 
 /// 发送请求并附带 JSON 数据
@@ -86,40 +93,13 @@ async fn send_request_with_json<T: Serialize>(
         .await
         .map_err(|e| ApiError::network(format!("发送请求失败: {}", e)))?;
 
-    // 检查状态码，如果不是成功状态码，尝试解析错误信息
-    if !response.status().is_success() {
-        let status_code = response.status().as_u16();
-        
-        // 尝试解析响应体中的错误信息
-        let error_message = match response.text().await {
-            Ok(text) => {
-                // 尝试解析为 JSON 并提取 message 字段
-                match serde_json::from_str::<serde_json::Value>(&text) {
-                    Ok(json) => {
-                        json.get("message")
-                            .and_then(|v| v.as_str())
-                            .unwrap_or(&text)
-                            .to_string()
-                    }
-                    Err(_) => text,
-                }
-            }
-            Err(_) => format!("请求失败，状态码: {}", status_code),
-        };
-
-        return Err(ApiError::new(status_code, error_message));
-    }
-
-    Ok(response)
+    handle_response_error(response).await
 }
 
-/// GET 请求并解析为 ApiResponse<T>
-pub async fn api_get<T: for<'de> Deserialize<'de>>(
-    base_url: &str,
-    endpoint: &str,
+/// 解析响应为 ApiResponse<T> 并提取数据
+async fn parse_api_response<T: for<'de> Deserialize<'de>>(
+    response: Response,
 ) -> Result<T, ApiError> {
-    let response = send_request(base_url, Method::GET, endpoint).await?;
-
     let api_response: ApiResponse<T> = response
         .json()
         .await
@@ -128,6 +108,15 @@ pub async fn api_get<T: for<'de> Deserialize<'de>>(
     api_response
         .data
         .ok_or_else(|| ApiError::network("服务器返回空数据".to_string()))
+}
+
+/// GET 请求并解析为 ApiResponse<T>
+pub async fn api_get<T: for<'de> Deserialize<'de>>(
+    base_url: &str,
+    endpoint: &str,
+) -> Result<T, ApiError> {
+    let response = send_request(base_url, Method::GET, endpoint).await?;
+    parse_api_response(response).await
 }
 
 /// POST 请求并解析为 ApiResponse<T>
@@ -137,15 +126,7 @@ pub async fn api_post<T: for<'de> Deserialize<'de>, R: Serialize>(
     json_data: &R,
 ) -> Result<T, ApiError> {
     let response = send_request_with_json(base_url, Method::POST, endpoint, json_data).await?;
-
-    let api_response: ApiResponse<T> = response
-        .json()
-        .await
-        .map_err(|e| ApiError::network(format!("解析响应失败: {}", e)))?;
-
-    api_response
-        .data
-        .ok_or_else(|| ApiError::network("服务器返回空数据".to_string()))
+    parse_api_response(response).await
 }
 
 /// POST 请求并返回是否成功
