@@ -77,6 +77,24 @@ pub async fn api_get<T: for<'de> Deserialize<'de>>(
         .ok_or_else(|| "服务器返回空数据".to_string())
 }
 
+/// POST 请求并解析为 ApiResponse<T>
+pub async fn api_post<T: for<'de> Deserialize<'de>, R: Serialize>(
+    base_url: &str,
+    endpoint: &str,
+    json_data: &R,
+) -> Result<T, String> {
+    let response = send_request_with_json(base_url, Method::POST, endpoint, json_data).await?;
+
+    let api_response: ApiResponse<T> = response
+        .json()
+        .await
+        .map_err(|e| format!("解析响应失败: {}", e))?;
+
+    api_response
+        .data
+        .ok_or_else(|| "服务器返回空数据".to_string())
+}
+
 /// POST 请求并返回是否成功
 pub async fn api_post_success<R: Serialize>(
     base_url: &str,

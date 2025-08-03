@@ -37,3 +37,10 @@ pub struct AddFileToFavoriteRequest {
     pub last_modified: u64,
     pub file_size: u64,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateFavoriteRequest {
+    pub name: String,
+    pub sort_order: i32,
+}

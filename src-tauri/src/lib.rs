@@ -1,6 +1,7 @@
 use crate::commands::{
     favorites::{
-        add_file_to_favorite, delete_favorite_file, get_all_favorite_files, get_favorites,
+        add_file_to_favorite, create_favorite, delete_favorite_file, get_all_favorite_files,
+        get_favorites,
     },
     files::{delete_file, download_file, get_files},
     thumbnail::{get_thumbnail, get_thumbnail_status},
@@ -22,6 +23,7 @@ pub fn run() {
             get_thumbnail,
             get_thumbnail_status,
             get_favorites,
+            create_favorite,
             add_file_to_favorite,
             get_all_favorite_files,
             delete_favorite_file,
