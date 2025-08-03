@@ -1,6 +1,6 @@
-import { useConfigStore } from "@/stores/configStore"
-import { FileInfo } from "@/types/files"
-import { invoke } from "@tauri-apps/api/core"
+import { useConfigStore } from '@/stores/configStore'
+import { FileInfo } from '@/types/files'
+import { invoke } from '@tauri-apps/api/core'
 
 class FileService {
   private getServerUrl(): string {
@@ -9,7 +9,7 @@ class FileService {
 
   async getFiles(path: string): Promise<FileInfo[]> {
     try {
-      const files = await invoke<FileInfo[]>("get_files", {
+      const files = await invoke<FileInfo[]>('get_files', {
         path,
         serverUrl: this.getServerUrl(),
       })
@@ -21,7 +21,7 @@ class FileService {
 
   async deleteFile(path: string): Promise<void> {
     try {
-      await invoke("delete_file", {
+      await invoke('delete_file', {
         path,
         serverUrl: this.getServerUrl(),
       })
@@ -32,7 +32,7 @@ class FileService {
 
   async downloadFile(path: string, filename: string): Promise<void> {
     try {
-      await invoke("download_file", {
+      await invoke('download_file', {
         path,
         filename,
         serverUrl: this.getServerUrl(),
@@ -44,7 +44,7 @@ class FileService {
 
   async getThumbnail(path: string): Promise<Uint8Array> {
     try {
-      const thumbnail = await invoke<number[]>("get_thumbnail", {
+      const thumbnail = await invoke<number[]>('get_thumbnail', {
         path,
         serverUrl: this.getServerUrl(),
       })

@@ -1,7 +1,7 @@
-import { useConfigStore } from "@/stores/configStore"
-import { FavoriteDto, FavoriteFileDto } from "@/types/favorite"
-import { AddFileToFavoriteRequest } from "@/types/request/favorites"
-import { invoke } from "@tauri-apps/api/core"
+import { useConfigStore } from '@/stores/configStore'
+import { FavoriteDto, FavoriteFileDto } from '@/types/favorite'
+import { AddFileToFavoriteRequest } from '@/types/request/favorites'
+import { invoke } from '@tauri-apps/api/core'
 
 class FavoriteService {
   private getServerUrl(): string {
@@ -10,7 +10,7 @@ class FavoriteService {
 
   async getFavorites(): Promise<FavoriteDto[]> {
     try {
-      const favorites = await invoke<FavoriteDto[]>("get_favorites", {
+      const favorites = await invoke<FavoriteDto[]>('get_favorites', {
         serverUrl: this.getServerUrl(),
       })
       return favorites
@@ -19,9 +19,12 @@ class FavoriteService {
     }
   }
 
-  async addFileToFavorite(request: AddFileToFavoriteRequest, favoriteId: number): Promise<boolean> {
+  async addFileToFavorite(
+    request: AddFileToFavoriteRequest,
+    favoriteId: number
+  ): Promise<boolean> {
     try {
-      const result = await invoke<boolean>("add_file_to_favorite", {
+      const result = await invoke<boolean>('add_file_to_favorite', {
         request,
         favoriteId,
         serverUrl: this.getServerUrl(),
@@ -34,7 +37,7 @@ class FavoriteService {
 
   async getAllFavoriteFiles(): Promise<FavoriteFileDto[]> {
     try {
-      const files = await invoke<FavoriteFileDto[]>("get_all_favorite_files", {
+      const files = await invoke<FavoriteFileDto[]>('get_all_favorite_files', {
         serverUrl: this.getServerUrl(),
       })
       return files
@@ -45,7 +48,7 @@ class FavoriteService {
 
   async deleteFavoriteFile(favoriteFileId: number): Promise<boolean> {
     try {
-      const result = await invoke<boolean>("delete_favorite_file", {
+      const result = await invoke<boolean>('delete_favorite_file', {
         favoriteFileId,
         serverUrl: this.getServerUrl(),
       })

@@ -1,4 +1,4 @@
 export const ROUTES = {
-  MAIN: "/",
-  FAVORITE: "/favorite",
+  MAIN: '/',
+  FAVORITE: '/favorite',
 } as const

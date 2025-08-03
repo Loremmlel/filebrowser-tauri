@@ -8,8 +8,8 @@ export interface FileInfo {
 }
 
 export enum FileType {
-  Folder = "Folder",
-  Image = "Image",
-  Video = "Video",
-  Other = "Other",
+  Folder = 'Folder',
+  Image = 'Image',
+  Video = 'Video',
+  Other = 'Other',
 }

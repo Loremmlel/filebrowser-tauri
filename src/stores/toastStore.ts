@@ -1,5 +1,5 @@
-import { TOAST_DURATION } from "@/constants/toast"
-import { create } from "zustand"
+import { TOAST_DURATION } from '@/constants/toast'
+import { create } from 'zustand'
 
 interface ToastState {
   message: string
@@ -13,7 +13,7 @@ interface ToastStore extends ToastState {
 }
 
 export const useToastStore = create<ToastStore>((set, get) => ({
-  message: "",
+  message: '',
   visible: false,
   duration: TOAST_DURATION.SHORT,
 
@@ -31,7 +31,7 @@ export const useToastStore = create<ToastStore>((set, get) => ({
 
   hideToast: () => {
     set({
-      message: "",
+      message: '',
       visible: false,
     })
   },

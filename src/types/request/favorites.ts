@@ -1,4 +1,4 @@
-import { FileType } from "../files"
+import { FileType } from '../files'
 
 export interface AddFileToFavoriteRequest {
   filename: string
