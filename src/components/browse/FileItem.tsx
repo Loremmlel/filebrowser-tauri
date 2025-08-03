@@ -14,16 +14,16 @@ import { Thumbnail } from '../yuzu/Thumbnail'
 interface FileItemProps {
   file: FileInfo
   isFavorite: boolean
-  onFileClick: (file: FileInfo) => void
-  onFavoriteToggle: (isFavorite: boolean, file: FileInfo) => void
-  onDownload?: (file: FileInfo) => void
-  onDelete?: (file: FileInfo) => void
+  onClick: () => void
+  onFavoriteToggle: () => void
+  onDownload?: () => void
+  onDelete?: () => void
 }
 
 export const FileItem: React.FC<FileItemProps> = ({
   file,
   isFavorite,
-  onFileClick,
+  onClick,
   onFavoriteToggle,
   onDownload,
   onDelete,
@@ -44,11 +44,14 @@ export const FileItem: React.FC<FileItemProps> = ({
   }, [file.type])
 
   return (
-    <div className='bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow'>
+    <div
+      className='bg-white rounded-lg border border-gray-200 p-4 
+    hover:shadow-md transition-shadow'
+    >
       {/* 操作按钮 */}
       <div className='flex justify-end space-x-2 mb-2'>
         <button
-          onClick={() => onFavoriteToggle(!isFavorite, file)}
+          onClick={onFavoriteToggle}
           className={`p-1 rounded-full transition-colors ${
             isFavorite ? 'text-red-500 hover:bg-red-50' : 'text-gray-500 hover:bg-gray-50'
           }`}
@@ -58,8 +61,9 @@ export const FileItem: React.FC<FileItemProps> = ({
 
         {onDownload != null && !file.isDirectory && (
           <button
-            onClick={() => onDownload(file)}
-            className='p-1 rounded-full text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition-colors'
+            onClick={onDownload}
+            className='p-1 rounded-full text-gray-400 hover:bg-gray-50 
+            hover:text-gray-600 transition-colors'
           >
             <ArrowDownTrayIcon className='w-5 h-5' />
           </button>
@@ -68,7 +72,8 @@ export const FileItem: React.FC<FileItemProps> = ({
         {onDelete != null && (
           <button
             onClick={() => setShowDeleteConfirm(true)}
-            className='p-1 rounded-full text-gray-400 hover:bg-gray-50 hover:text-red-500 transition-colors'
+            className='p-1 rounded-full text-gray-400 
+            hover:bg-gray-50 hover:text-red-500 transition-colors'
           >
             <TrashIcon className='w-5 h-5' />
           </button>
@@ -76,10 +81,7 @@ export const FileItem: React.FC<FileItemProps> = ({
       </div>
 
       {/* 文件内容 */}
-      <div
-        className='flex flex-col items-center space-y-2 cursor-pointer'
-        onClick={() => onFileClick(file)}
-      >
+      <div className='flex flex-col items-center space-y-2 cursor-pointer' onClick={onClick}>
         <div className='w-16 h-16 flex items-center justify-center'>
           {file.type === FileType.Image || file.type === FileType.Video ? (
             <Thumbnail file={file} />
@@ -105,16 +107,18 @@ export const FileItem: React.FC<FileItemProps> = ({
             <div className='flex space-x-3'>
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className='flex-1 bg-gray-200 py-2 px-4 rounded-md hover:bg-gray-300 transition-colors'
+                className='flex-1 bg-gray-200 py-2 px-4 rounded-md 
+                hover:bg-gray-300 transition-colors'
               >
                 取消
               </button>
               <button
                 onClick={() => {
-                  onDelete?.(file)
+                  onDelete?.()
                   setShowDeleteConfirm(false)
                 }}
-                className='flex-1 bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition-colors'
+                className='flex-1 bg-red-600 text-white py-2 px-4 rounded-md 
+                hover:bg-red-700 transition-colors'
               >
                 确定
               </button>
