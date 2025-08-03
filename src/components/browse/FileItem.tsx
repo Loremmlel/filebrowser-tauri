@@ -1,15 +1,9 @@
 import { FileInfo, FileType } from '@/types/files'
 import { HeartIcon, HeartIcon as HeartSolidIcon } from '@heroicons/react/24/outline'
-import {
-  ArrowDownTrayIcon,
-  DocumentIcon,
-  FolderIcon,
-  PhotoIcon,
-  TrashIcon,
-  VideoCameraIcon,
-} from '@heroicons/react/24/solid'
+import { ArrowDownTrayIcon, TrashIcon } from '@heroicons/react/24/solid'
 import { useMemo, useState } from 'react'
 import { Thumbnail } from '../yuzu/Thumbnail'
+import { getFileIcon } from '@/utils/iconUtil'
 
 interface FileItemProps {
   file: FileInfo
@@ -30,18 +24,7 @@ export const FileItem: React.FC<FileItemProps> = ({
 }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
-  const FileIcon = useMemo(() => {
-    switch (file.type) {
-      case FileType.Folder:
-        return <FolderIcon className='w-12 h-12 text-blue-500' />
-      case FileType.Image:
-        return <PhotoIcon className='w-12 h-12 text-green-500' />
-      case FileType.Video:
-        return <VideoCameraIcon className='w-12 h-12 text-purple-500' />
-      default:
-        return <DocumentIcon className='w-12 h-12 text-gray-500' />
-    }
-  }, [file.type])
+  const FileIcon = useMemo(() => getFileIcon(file.type), [file.type])
 
   return (
     <div
