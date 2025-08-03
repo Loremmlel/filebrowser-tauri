@@ -19,6 +19,31 @@ class FavoriteService {
     }
   }
 
+  async createFavorite(name: string, sortOrder: number): Promise<FavoriteDto> {
+    try {
+      const favorite = await invoke<FavoriteDto>('create_favorite', {
+        name,
+        sortOrder,
+        serverUrl: this.getServerUrl(),
+      })
+      return favorite
+    } catch (error) {
+      throw new Error(`创建收藏失败: ${error}`)
+    }
+  }
+
+  async deleteFavorite(favoriteId: number): Promise<boolean> {
+    try {
+      const result = await invoke<boolean>('delete_favorite', {
+        favoriteId,
+        serverUrl: this.getServerUrl(),
+      })
+      return result
+    } catch (error) {
+      throw new Error(`删除收藏夹失败: ${error}`)
+    }
+  }
+
   async addFileToFavorite(request: AddFileToFavoriteRequest, favoriteId: number): Promise<boolean> {
     try {
       const result = await invoke<boolean>('add_file_to_favorite', {

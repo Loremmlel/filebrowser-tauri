@@ -38,3 +38,9 @@ pub async fn create_favorite(
 ) -> Result<FavoriteDto, String> {
     api_post(&server_url, "favorites", &request).await
 }
+
+#[command]
+pub async fn delete_favorite(id: i64, server_url: String) -> Result<bool, String> {
+    let endpoint = format!("favorites/{}", id);
+    api_delete_success(&server_url, &endpoint).await
+}
