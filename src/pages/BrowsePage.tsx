@@ -11,7 +11,7 @@ import { FileInfo, FileType } from '@/types/files'
 import { useState } from 'react'
 
 export const BrowsePage: React.FC = () => {
-  const { currentPath, currentFavoriteFile, setCurrentFavoriteFile } = useBrowseStore()
+  const { paths: currentPath, currentFavoriteFile, setCurrentFavoriteFile } = useBrowseStore()
   const [showAddToFavoritesModal, setShowAddToFavoritesModal] = useState(false)
 
   const { files, loading, loadFiles, loadFavorites } = useBrowseData()

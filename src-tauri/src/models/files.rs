@@ -5,7 +5,9 @@ use serde::{Deserialize, Serialize};
 pub struct FileInfo {
     pub name: String,
     pub size: u64,
+    #[serde(rename = "type")]
     pub file_type: FileType,
+    pub is_directory: bool,
     pub last_modified: u64,
     pub path: String,
 }

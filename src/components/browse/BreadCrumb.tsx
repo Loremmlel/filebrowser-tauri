@@ -12,7 +12,7 @@ interface BreadCrumbProps {
 }
 
 export const BreadCrumb: React.FC<BreadCrumbProps> = ({ path, onNavigate }) => {
-  const fullPath: BreadCrumbItem[] = [{ name: '/', id: undefined }, ...path]
+  const fullPath: BreadCrumbItem[] = [{ name: '/', id: '/' }, ...path]
 
   return (
     <div className='flex items-center space-x-1 p-4 bg-white border-b border-gray-200'>

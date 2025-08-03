@@ -8,7 +8,7 @@ import { toast } from '@/utils/toast'
  * 封装了文件点击、导航、下载、删除等操作逻辑
  */
 export const useFileOperations = () => {
-  const { currentPath, setCurrentPath, setPreviewItem } = useBrowseStore()
+  const { paths: currentPath, setCurrentPath, setPreviewItem } = useBrowseStore()
 
   // 处理面包屑导航
   const handleBreadCrumbNavigate = (targetIndex: number) => {

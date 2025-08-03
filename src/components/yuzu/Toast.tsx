@@ -15,7 +15,7 @@ export const ToastContainer: React.FC<{ children: React.ReactNode }> = ({ childr
         }`}
       >
         <div
-          className='bg-blue-200/50 border-blue-300 border-2 backdrop-blur-sm 
+          className='bg-blue-600/50 border-blue-300 border-2 backdrop-blur-sm 
         text-white px-6 py-2 rounded-2xl'
         >
           <p className='text-sm font-medium whitespace-nowrap max-w-xs truncate'>{message}</p>
