@@ -12,6 +12,7 @@ import {
   VideoCameraIcon,
 } from "@heroicons/react/24/solid";
 import { useMemo, useState } from "react";
+import { Thumbnail } from "../yuzu/Thumbnail";
 
 interface FileItemProps {
   file: FileInfo;
@@ -32,7 +33,7 @@ export const FileItem: React.FC<FileItemProps> = ({
 }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const fileIcon = useMemo(() => {
+  const FileIcon = useMemo(() => {
     switch (file.type) {
       case FileType.Folder:
         return <FolderIcon className="w-12 h-12 text-blue-500" />;
@@ -90,9 +91,9 @@ export const FileItem: React.FC<FileItemProps> = ({
       >
         <div className="w-16 h-16 flex items-center justify-center">
           {file.type === FileType.Image || file.type === FileType.Video ? (
-            <div />
+            <Thumbnail file={file} />
           ) : (
-            fileIcon
+            FileIcon
           )}
         </div>
 
