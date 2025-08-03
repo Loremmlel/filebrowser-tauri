@@ -28,7 +28,7 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
-  const imageUrl = `${serverUrl}/files/${encodeURIComponent(file.path)}`
+  const imageUrl = `${serverUrl}/image?path=${encodeURIComponent(file.path)}`
 
   function handleImageLoad() {
     setLoading(false)
@@ -80,7 +80,7 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({
       </button>
 
       {/* 图片内容 */}
-      <div className='max-w-full max-h-full p-16'>
+      <div className='w-full h-full flex items-center justify-center p-16'>
         {loading && <Loading />}
 
         {error ? (

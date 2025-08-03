@@ -15,6 +15,8 @@ export const Thumbnail: React.FC<ThumbnailProps> = ({ file, className }) => {
   const [error, setError] = useState<boolean>(false)
 
   useEffect(() => {
+    let currentUrl: string | null = null
+
     async function loadThumbnail() {
       if (file.type !== FileType.Image && file.type !== FileType.Video) {
         setLoading(false)
@@ -27,6 +29,7 @@ export const Thumbnail: React.FC<ThumbnailProps> = ({ file, className }) => {
         const thumbnailData = await fileService.getThumbnail(file.path)
         const blob = new Blob([thumbnailData], { type: 'image/jpeg' })
         const url = URL.createObjectURL(blob)
+        currentUrl = url
         setThumbnailUrl(url)
       } catch {
         setError(true)
@@ -38,11 +41,11 @@ export const Thumbnail: React.FC<ThumbnailProps> = ({ file, className }) => {
     loadThumbnail()
 
     return () => {
-      if (thumbnailUrl) {
-        URL.revokeObjectURL(thumbnailUrl)
+      if (currentUrl) {
+        URL.revokeObjectURL(currentUrl)
       }
     }
-  }, [file.path, file.type, thumbnailUrl])
+  }, [file.path, file.type])
 
   if (loading) {
     return <Loading className={className} />
@@ -61,7 +64,7 @@ export const Thumbnail: React.FC<ThumbnailProps> = ({ file, className }) => {
     <img
       src={thumbnailUrl}
       alt={`${file.name}缩略图`}
-      className={`${className} object-cover rounded`}
+      className={`${className} w-full h-full object-cover rounded`}
     />
   )
 }

@@ -82,9 +82,9 @@ export const FileItem: React.FC<FileItemProps> = ({
 
       {/* 文件内容 */}
       <div className='flex flex-col items-center space-y-2 cursor-pointer' onClick={onClick}>
-        <div className='w-16 h-16 flex items-center justify-center'>
+        <div className='w-16 h-16 flex items-center justify-center overflow-hidden rounded'>
           {file.type === FileType.Image || file.type === FileType.Video ? (
-            <Thumbnail file={file} />
+            <Thumbnail file={file} className='w-full h-full' />
           ) : (
             FileIcon
           )}
