@@ -3,7 +3,7 @@ use crate::commands::{
         add_file_to_favorite, delete_favorite_file, get_all_favorite_files, get_favorites,
     },
     files::{delete_file, download_file, get_files},
-    thumbnail::get_thumbnail,
+    thumbnail::{get_thumbnail, get_thumbnail_status},
 };
 
 mod commands;
@@ -20,6 +20,7 @@ pub fn run() {
             delete_file,
             download_file,
             get_thumbnail,
+            get_thumbnail_status,
             get_favorites,
             add_file_to_favorite,
             get_all_favorite_files,
