@@ -1,15 +1,15 @@
-import { TOAST_DURATION } from "@/constants/toast";
-import { create } from "zustand";
+import { TOAST_DURATION } from "@/constants/toast"
+import { create } from "zustand"
 
 interface ToastState {
-  message: string;
-  visible: boolean;
-  duration: number;
+  message: string
+  visible: boolean
+  duration: number
 }
 
 interface ToastStore extends ToastState {
-  showToast: (message: string, duration?: number) => void;
-  hideToast: () => void;
+  showToast: (message: string, duration?: number) => void
+  hideToast: () => void
 }
 
 export const useToastStore = create<ToastStore>((set, get) => ({
@@ -22,17 +22,17 @@ export const useToastStore = create<ToastStore>((set, get) => ({
       message,
       visible: true,
       duration,
-    });
+    })
 
     setTimeout(() => {
-      get().hideToast();
-    }, duration);
+      get().hideToast()
+    }, duration)
   },
 
   hideToast: () => {
     set({
       message: "",
       visible: false,
-    });
+    })
   },
-}));
+}))

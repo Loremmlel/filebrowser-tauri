@@ -1,8 +1,8 @@
-import { BottomNav } from "@/components/yuzu/BottomNav";
-import { ToastContainer } from "@/components/yuzu/Toast";
+import { BottomNav } from "@/components/yuzu/BottomNav"
+import { ToastContainer } from "@/components/yuzu/Toast"
 
 interface AppLayoutProps {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
@@ -16,5 +16,5 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         <BottomNav />
       </div>
     </ToastContainer>
-  );
-};
+  )
+}

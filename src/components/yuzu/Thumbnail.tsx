@@ -15,7 +15,7 @@ export const Thumbnail: React.FC<ThumbnailProps> = ({ file, className }) => {
   const [error, setError] = useState<boolean>(false);
 
   useEffect(() => {
-    const loadThumbnail = async () => {
+    async function loadThumbnail() {
       if (file.type !== FileType.Image && file.type !== FileType.Video) {
         setLoading(false);
         return;
@@ -33,7 +33,7 @@ export const Thumbnail: React.FC<ThumbnailProps> = ({ file, className }) => {
       } finally {
         setLoading(false);
       }
-    };
+    }
 
     loadThumbnail();
 

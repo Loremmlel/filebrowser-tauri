@@ -1,10 +1,10 @@
-import { useConfigStore } from "@/stores/configStore";
-import { FileInfo } from "@/types/files";
-import { invoke } from "@tauri-apps/api/core";
+import { useConfigStore } from "@/stores/configStore"
+import { FileInfo } from "@/types/files"
+import { invoke } from "@tauri-apps/api/core"
 
 class FileService {
   private getServerUrl(): string {
-    return useConfigStore.getState().serverUrl;
+    return useConfigStore.getState().serverUrl
   }
 
   async getFiles(path: string): Promise<FileInfo[]> {
@@ -12,10 +12,10 @@ class FileService {
       const files = await invoke<FileInfo[]>("get_files", {
         path,
         serverUrl: this.getServerUrl(),
-      });
-      return files;
+      })
+      return files
     } catch (error) {
-      throw new Error(`获取文件列表失败: ${error}`);
+      throw new Error(`获取文件列表失败: ${error}`)
     }
   }
 
@@ -24,9 +24,9 @@ class FileService {
       await invoke("delete_file", {
         path,
         serverUrl: this.getServerUrl(),
-      });
+      })
     } catch (error) {
-      throw new Error(`删除文件失败: ${error}`);
+      throw new Error(`删除文件失败: ${error}`)
     }
   }
 
@@ -36,9 +36,9 @@ class FileService {
         path,
         filename,
         serverUrl: this.getServerUrl(),
-      });
+      })
     } catch (error) {
-      throw new Error(`下载文件失败: ${error}`);
+      throw new Error(`下载文件失败: ${error}`)
     }
   }
 
@@ -47,12 +47,12 @@ class FileService {
       const thumbnail = await invoke<number[]>("get_thumbnail", {
         path,
         serverUrl: this.getServerUrl(),
-      });
-      return new Uint8Array(thumbnail);
+      })
+      return new Uint8Array(thumbnail)
     } catch (error) {
-      throw new Error(`获取缩略图失败: ${error}`);
+      throw new Error(`获取缩略图失败: ${error}`)
     }
   }
 }
 
-export const fileService = new FileService();
+export const fileService = new FileService()

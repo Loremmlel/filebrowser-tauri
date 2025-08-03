@@ -1,18 +1,18 @@
-import { ChevronRightIcon } from "@heroicons/react/24/solid";
-import React from "react";
+import { ChevronRightIcon } from "@heroicons/react/24/solid"
+import React from "react"
 
 export interface BreadCrumbItem {
-  name: string;
-  id?: string;
+  name: string
+  id?: string
 }
 
 interface BreadCrumbProps {
-  path: BreadCrumbItem[];
-  onNavigate: (targetIndex: number) => void;
+  path: BreadCrumbItem[]
+  onNavigate: (targetIndex: number) => void
 }
 
 export const BreadCrumb: React.FC<BreadCrumbProps> = ({ path, onNavigate }) => {
-  const fullPath: BreadCrumbItem[] = [{ name: "/", id: undefined }, ...path];
+  const fullPath: BreadCrumbItem[] = [{ name: "/", id: undefined }, ...path]
 
   return (
     <div className="flex items-center space-x-1 p-4 bg-white border-b border-gray-200">
@@ -27,12 +27,10 @@ export const BreadCrumb: React.FC<BreadCrumbProps> = ({ path, onNavigate }) => {
                 : "text-blue-600 hover:text-blue-800 hover:bg-blue-50"
             }`}
           >
-            {item.name.length > 20
-              ? `${item.name.slice(0, 20)}...`
-              : item.name}
+            {item.name.length > 20 ? `${item.name.slice(0, 20)}...` : item.name}
           </button>
         </React.Fragment>
       ))}
     </div>
-  );
-};
+  )
+}
