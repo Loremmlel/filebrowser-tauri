@@ -1,5 +1,6 @@
 import { favoriteService } from '@/api/favoriteService'
 import { useFavoriteStore } from '@/stores/favoriteStore'
+import { CreateFavoriteRequest } from '@/types/request/favorites'
 import { toast } from '@/utils/toast'
 import { useCallback, useEffect } from 'react'
 
@@ -22,9 +23,9 @@ export const useFavoriteData = () => {
     }
   }, [setFavorites, setLoading])
 
-  const createFavorite = async (name: string, sortOrder: number) => {
+  const createFavorite = async (request: CreateFavoriteRequest) => {
     try {
-      await favoriteService.createFavorite(name, sortOrder)
+      await favoriteService.createFavorite(request)
       toast.show('创建收藏夹成功')
       loadFavorites()
       return true
@@ -34,23 +35,9 @@ export const useFavoriteData = () => {
     }
   }
 
-  const deleteFavorite = async (id: number) => {
-    try {
-      const success = await favoriteService.deleteFavorite(id)
-      if (success) {
-        toast.show('删除收藏夹成功')
-        loadFavorites()
-      } else {
-        toast.show('删除收藏夹失败，请稍后再试')
-      }
-    } catch {
-      toast.show('删除收藏夹失败，请稍后再试')
-    }
-  }
-
   useEffect(() => {
     loadFavorites()
   }, [loadFavorites])
 
-  return { favorites, loading, loadFavorites, createFavorite, deleteFavorite }
+  return { favorites, loading, loadFavorites, createFavorite }
 }

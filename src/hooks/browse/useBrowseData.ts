@@ -27,6 +27,7 @@ export const useBrowseData = () => {
       const files = await fileService.getFiles(requestPath())
       setFiles(files)
     } catch {
+      setFiles([])
       toast.show('加载文件失败，请稍后重试')
     } finally {
       setLoading(false)

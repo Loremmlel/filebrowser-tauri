@@ -14,7 +14,7 @@ export const FavoritePage: React.FC = () => {
   const navigate = useNavigate()
   const [showCreateModal, setShowCreateModal] = useState(false)
 
-  const { favorites, loading, createFavorite } = useFavoriteData()
+  const { favorites, loading, createFavorite, loadFavorites } = useFavoriteData()
   const {
     selectedFavoriteIds,
     hasSelection,
@@ -26,7 +26,7 @@ export const FavoritePage: React.FC = () => {
   } = useFavoriteSelection()
 
   async function handleCreateFavorite(name: string, sortOrder: number) {
-    const success = await createFavorite(name, sortOrder)
+    const success = await createFavorite({ name, sortOrder })
     if (success) {
       setShowCreateModal(false)
     }
@@ -42,6 +42,7 @@ export const FavoritePage: React.FC = () => {
     if (confirmed) {
       const deleteCount = await deleteSelectedFavorites()
       if (deleteCount > 0) {
+        loadFavorites()
         toast.show(`成功删除了 ${deleteCount} 个收藏夹。`)
         if (deleteCount < selectionCount) {
           toast.show('部分收藏夹删除失败，请检查权限或网络连接。')

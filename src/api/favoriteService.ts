@@ -1,6 +1,6 @@
 import { useConfigStore } from '@/stores/configStore'
 import { FavoriteDto, FavoriteFileDto } from '@/types/favorite'
-import { AddFileToFavoriteRequest } from '@/types/request/favorites'
+import { AddFileToFavoriteRequest, CreateFavoriteRequest } from '@/types/request/favorites'
 import { invoke } from '@tauri-apps/api/core'
 
 class FavoriteService {
@@ -19,11 +19,10 @@ class FavoriteService {
     }
   }
 
-  async createFavorite(name: string, sortOrder: number): Promise<FavoriteDto> {
+  async createFavorite(request: CreateFavoriteRequest): Promise<FavoriteDto> {
     try {
       const favorite = await invoke<FavoriteDto>('create_favorite', {
-        name,
-        sortOrder,
+        request,
         serverUrl: this.getServerUrl(),
       })
       return favorite

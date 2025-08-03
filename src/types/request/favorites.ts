@@ -8,3 +8,8 @@ export interface AddFileToFavoriteRequest {
   lastModified: number
   fileSize: number
 }
+
+export interface CreateFavoriteRequest {
+  name: string
+  sortOrder: number
+}
