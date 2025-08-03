@@ -4,6 +4,7 @@ use std::sync::OnceLock;
 use tauri::command;
 use tokio::sync::Semaphore;
 
+use crate::models::error::ApiError;
 use crate::services::api_service::api_get_bytes;
 
 // 全局信号量，限制最多5个并发缩略图请求
@@ -41,7 +42,7 @@ pub async fn get_thumbnail_status() -> ThumbnailStatus {
 }
 
 #[command]
-pub async fn get_thumbnail(path: String, server_url: String) -> Result<Vec<u8>, String> {
+pub async fn get_thumbnail(path: String, server_url: String) -> Result<Vec<u8>, ApiError> {
     // 增加等待计数
     WAITING_COUNT.fetch_add(1, Ordering::Relaxed);
     let waiting_count = WAITING_COUNT.load(Ordering::Relaxed);
@@ -56,7 +57,7 @@ pub async fn get_thumbnail(path: String, server_url: String) -> Result<Vec<u8>, 
     let _permit = get_thumbnail_semaphore()
         .acquire()
         .await
-        .map_err(|e| format!("获取缩略图请求许可失败: {}", e))?;
+        .map_err(|e| ApiError::network(format!("获取缩略图请求许可失败: {}", e)))?;
 
     // 减少等待计数，增加处理计数
     WAITING_COUNT.fetch_sub(1, Ordering::Relaxed);

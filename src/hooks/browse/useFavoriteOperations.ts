@@ -16,11 +16,11 @@ export const useFavoriteOperations = () => {
     try {
       const success = await favoriteService.deleteFavoriteFile(favoriteFileId)
       if (success) {
-        toast.show('取消收藏成功')
+        toast.success('取消收藏成功')
         onSuccess?.()
       }
-    } catch {
-      toast.show('取消收藏失败')
+    } catch (error) {
+      toast.handleApiError(error, '取消收藏失败')
     }
   }
 
@@ -60,11 +60,11 @@ export const useFavoriteOperations = () => {
       }
       const success = await favoriteService.addFileToFavorite(request, favoriteId)
       if (success) {
-        toast.show('添加到收藏夹成功')
+        toast.success('添加到收藏夹成功')
         onSuccess?.()
       }
-    } catch {
-      toast.show('添加到收藏夹失败')
+    } catch (error) {
+      toast.handleApiError(error, '添加到收藏夹失败')
     }
   }
 

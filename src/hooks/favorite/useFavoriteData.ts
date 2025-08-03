@@ -16,8 +16,8 @@ export const useFavoriteData = () => {
       setLoading(true)
       const favorites = await favoriteService.getFavorites()
       setFavorites(favorites)
-    } catch {
-      toast.show('加载收藏夹失败，请稍后再试')
+    } catch (error) {
+      toast.handleApiError(error, '加载收藏夹失败')
     } finally {
       setLoading(false)
     }
@@ -26,11 +26,11 @@ export const useFavoriteData = () => {
   const createFavorite = async (request: CreateFavoriteRequest) => {
     try {
       await favoriteService.createFavorite(request)
-      toast.show('创建收藏夹成功')
+      toast.success('创建收藏夹成功')
       loadFavorites()
       return true
-    } catch {
-      toast.show('创建收藏夹失败，请稍后再试')
+    } catch (error) {
+      toast.handleApiError(error, '创建收藏夹失败')
       return false
     }
   }

@@ -26,9 +26,9 @@ export const useBrowseData = () => {
       setLoading(true)
       const files = await fileService.getFiles(requestPath())
       setFiles(files)
-    } catch {
+    } catch (error) {
       setFiles([])
-      toast.show('加载文件失败，请稍后重试')
+      toast.handleApiError(error, '加载文件失败')
     } finally {
       setLoading(false)
     }
@@ -49,8 +49,8 @@ export const useBrowseData = () => {
         favoriteFilesMap.set(favoriteFile.filePath, favoriteFile.id)
       })
       setFavoriteFilesMap(favoriteFilesMap)
-    } catch {
-      toast.show('加载收藏夹失败，请稍后重试')
+    } catch (error) {
+      toast.handleApiError(error, '加载收藏夹失败')
     }
   }, [setFavorites, setFavoriteFilesMap])
 

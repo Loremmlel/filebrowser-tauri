@@ -32,9 +32,9 @@ export const useFileOperations = () => {
   const handleDownload = async (file: FileInfo) => {
     try {
       await fileService.downloadFile(file.path, file.name)
-      toast.show('下载完成')
-    } catch {
-      toast.show('下载失败')
+      toast.success('下载完成')
+    } catch (error) {
+      toast.handleApiError(error, '下载失败')
     }
   }
 
@@ -42,10 +42,10 @@ export const useFileOperations = () => {
   const handleDelete = async (file: FileInfo, onSuccess?: () => void) => {
     try {
       await fileService.deleteFile(file.path)
-      toast.show('删除成功')
+      toast.success('删除成功')
       onSuccess?.()
-    } catch {
-      toast.show('删除失败')
+    } catch (error) {
+      toast.handleApiError(error, '删除失败')
     }
   }
 

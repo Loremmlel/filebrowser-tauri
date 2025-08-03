@@ -1,8 +1,23 @@
-import { useToastStore } from '@/stores/toastStore'
+import { useToastStore, ToastType } from '@/stores/toastStore'
 import React from 'react'
 
 export const ToastContainer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { message, visible } = useToastStore()
+  const { message, visible, type } = useToastStore()
+
+  // 根据类型获取样式
+  const getToastStyles = (toastType: ToastType) => {
+    switch (toastType) {
+      case ToastType.Success:
+        return 'bg-green-600/90 border-green-300'
+      case ToastType.Warning:
+        return 'bg-yellow-600/90 border-yellow-300'
+      case ToastType.Error:
+        return 'bg-red-600/90 border-red-300'
+      case ToastType.Info:
+      default:
+        return 'bg-blue-600/90 border-blue-300'
+    }
+  }
 
   return (
     <div className='relative w-full h-full'>
@@ -15,8 +30,8 @@ export const ToastContainer: React.FC<{ children: React.ReactNode }> = ({ childr
         }`}
       >
         <div
-          className='bg-blue-600/50 border-blue-300 border-2 backdrop-blur-sm 
-        text-white px-6 py-2 rounded-2xl'
+          className={`${getToastStyles(type)} border-2 backdrop-blur-sm 
+        text-white px-6 py-2 rounded-2xl`}
         >
           <p className='text-sm font-medium whitespace-nowrap max-w-xs truncate'>{message}</p>
         </div>

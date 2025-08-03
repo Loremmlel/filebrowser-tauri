@@ -1,3 +1,4 @@
 pub mod api_response;
-pub mod files;
+pub mod error;
 pub mod favorite;
+pub mod files;

@@ -9,74 +9,50 @@ class FavoriteService {
   }
 
   async getFavorites(): Promise<FavoriteDto[]> {
-    try {
-      const favorites = await invoke<FavoriteDto[]>('get_favorites', {
-        serverUrl: this.getServerUrl(),
-      })
-      return favorites
-    } catch (error) {
-      throw new Error(`获取收藏列表失败: ${error}`)
-    }
+    const favorites = await invoke<FavoriteDto[]>('get_favorites', {
+      serverUrl: this.getServerUrl(),
+    })
+    return favorites
   }
 
   async createFavorite(request: CreateFavoriteRequest): Promise<FavoriteDto> {
-    try {
-      const favorite = await invoke<FavoriteDto>('create_favorite', {
-        request,
-        serverUrl: this.getServerUrl(),
-      })
-      return favorite
-    } catch (error) {
-      throw new Error(`创建收藏失败: ${error}`)
-    }
+    const favorite = await invoke<FavoriteDto>('create_favorite', {
+      request,
+      serverUrl: this.getServerUrl(),
+    })
+    return favorite
   }
 
   async deleteFavorite(favoriteId: number): Promise<boolean> {
-    try {
-      const result = await invoke<boolean>('delete_favorite', {
-        favoriteId,
-        serverUrl: this.getServerUrl(),
-      })
-      return result
-    } catch (error) {
-      throw new Error(`删除收藏夹失败: ${error}`)
-    }
+    const result = await invoke<boolean>('delete_favorite', {
+      favoriteId,
+      serverUrl: this.getServerUrl(),
+    })
+    return result
   }
 
   async addFileToFavorite(request: AddFileToFavoriteRequest, favoriteId: number): Promise<boolean> {
-    try {
-      const result = await invoke<boolean>('add_file_to_favorite', {
-        request,
-        favoriteId,
-        serverUrl: this.getServerUrl(),
-      })
-      return result
-    } catch (error) {
-      throw new Error(`添加文件到收藏夹失败: ${error}`)
-    }
+    const result = await invoke<boolean>('add_file_to_favorite', {
+      request,
+      favoriteId,
+      serverUrl: this.getServerUrl(),
+    })
+    return result
   }
 
   async getAllFavoriteFiles(): Promise<FavoriteFileDto[]> {
-    try {
-      const files = await invoke<FavoriteFileDto[]>('get_all_favorite_files', {
-        serverUrl: this.getServerUrl(),
-      })
-      return files
-    } catch (error) {
-      throw new Error(`获取收藏夹文件列表失败: ${error}`)
-    }
+    const files = await invoke<FavoriteFileDto[]>('get_all_favorite_files', {
+      serverUrl: this.getServerUrl(),
+    })
+    return files
   }
 
   async deleteFavoriteFile(favoriteFileId: number): Promise<boolean> {
-    try {
-      const result = await invoke<boolean>('delete_favorite_file', {
-        favoriteFileId,
-        serverUrl: this.getServerUrl(),
-      })
-      return result
-    } catch (error) {
-      throw new Error(`删除收藏夹文件失败: ${error}`)
-    }
+    const result = await invoke<boolean>('delete_favorite_file', {
+      favoriteFileId,
+      serverUrl: this.getServerUrl(),
+    })
+    return result
   }
 }
 

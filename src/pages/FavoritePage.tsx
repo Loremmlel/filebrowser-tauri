@@ -43,9 +43,9 @@ export const FavoritePage: React.FC = () => {
       const deleteCount = await deleteSelectedFavorites()
       if (deleteCount > 0) {
         loadFavorites()
-        toast.show(`成功删除了 ${deleteCount} 个收藏夹。`)
+        toast.success(`成功删除了 ${deleteCount} 个收藏夹。`)
         if (deleteCount < selectionCount) {
-          toast.show('部分收藏夹删除失败，请检查权限或网络连接。')
+          toast.warning('部分收藏夹删除失败，请检查权限或网络连接。')
         }
       }
     }
