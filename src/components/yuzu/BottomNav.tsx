@@ -26,7 +26,7 @@ const navItems: NavItem[] = [
 ]
 
 export const BottomNav: React.FC = () => {
-  const localtion = useLocation()
+  const location = useLocation()
   const navigate = useNavigate()
 
   function handleNavigation(route: string) {
@@ -37,7 +37,7 @@ export const BottomNav: React.FC = () => {
     <nav className='w-full bg-blue-50 border-t border-blue-100'>
       <div className='flex items-center justify-around h-16'>
         {navItems.map(({ route, label, icon, activeIcon }) => {
-          const isActive = localtion.pathname === route
+          const isActive = location.pathname === route
           const IconComponent = isActive ? activeIcon : icon
 
           return (

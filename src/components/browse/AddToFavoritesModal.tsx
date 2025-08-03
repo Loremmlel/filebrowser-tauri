@@ -27,8 +27,8 @@ export const AddToFavoritesModal: React.FC<AddFavoritesModalProps> = ({
       <div className='bg-white rounded-lg p-6 max-w-md w-full mx-4'>
         <div className='flex justify-between items-center mb-4'>
           <h3 className='text-lg font-medium text-gray-900'>添加到收藏夹</h3>
-          <button onClick={onClose} name='text-gray-400 hover:text-gray-600'>
-            <XMarkIcon name='w-6 h-6' />
+          <button onClick={onClose} className='text-gray-400 hover:text-gray-600'>
+            <XMarkIcon className='w-6 h-6' />
           </button>
         </div>
 

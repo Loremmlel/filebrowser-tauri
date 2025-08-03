@@ -65,7 +65,7 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({
       {/* 导航按钮 */}
       <button
         onClick={onPrev}
-        className='absolute left-4 top-1/2 transform-translate-y-1/2 p-2 text-white 
+        className='absolute left-4 top-1/2 transform -translate-y-1/2 p-2 text-white 
         hover:bg-white/20 rounded-full transition-colors z-10'
       >
         <ChevronLeftIcon className='w-8 h-8' />
@@ -73,7 +73,7 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({
 
       <button
         onClick={onNext}
-        className='absolute right-4 top-1/2 transform-translate-y-1/2 p-2 text-white 
+        className='absolute right-4 top-1/2 transform -translate-y-1/2 p-2 text-white 
         hover:bg-white/20 rounded-full transition-colors z-10'
       >
         <ChevronRightIcon className='w-8 h-8' />

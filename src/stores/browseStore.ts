@@ -36,7 +36,7 @@ interface BrowseStore extends BrowseState {
 export const useBrowseStore = create<BrowseStore>((set, get) => ({
   files: [],
   loading: false,
-  currentPath: [],
+  currentPath: [{ name: '/', id: '/' }],
   previewItem: null,
   favorites: [],
   favoriteFilesMap: new Map(),
