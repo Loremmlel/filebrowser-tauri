@@ -4,6 +4,7 @@ use crate::commands::{
         get_all_favorite_files, get_favorites,
     },
     files::{delete_file, download_file, get_files},
+    os::get_platform,
     thumbnail::{get_thumbnail, get_thumbnail_status},
 };
 
@@ -17,6 +18,7 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
+            get_platform,
             get_files,
             delete_file,
             download_file,

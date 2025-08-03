@@ -21,3 +21,4 @@ export const useConfigStore = create<ConfigStore>()(
     { name: 'config' }
   )
 )
+

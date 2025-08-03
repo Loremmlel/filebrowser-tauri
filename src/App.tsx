@@ -4,8 +4,12 @@ import { AppLayout } from './layouts/AppLayout'
 import { ROUTES } from './constants/routes'
 import { BrowsePage } from './pages/BrowsePage'
 import { FavoritePage } from './pages/FavoritePage'
+import { useAppInitialization } from './hooks/useAppInitialization'
 
 function App() {
+  // 初始化应用，根据平台设置服务器地址
+  useAppInitialization()
+
   return (
     <BrowserRouter>
       <AppLayout>
