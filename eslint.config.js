@@ -47,7 +47,7 @@ export default tseslint.config(
           code: 100,
           tabWidth: 2,
           ignoreUrls: true,
-          ignoreStrings: true,
+          ignoreStrings: false,
           ignoreTemplateLiterals: true,
           ignoreRegExpLiterals: true,
           ignoreComments: false,
