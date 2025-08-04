@@ -5,7 +5,7 @@ use crate::commands::{
     },
     files::{delete_file, download_file, get_files},
     os::get_platform,
-    thumbnail::{get_thumbnail, get_thumbnail_status},
+    thumbnail::{clear_thumbnail_cache, get_thumbnail, get_thumbnail_status},
 };
 
 mod commands;
@@ -24,6 +24,7 @@ pub fn run() {
             download_file,
             get_thumbnail,
             get_thumbnail_status,
+            clear_thumbnail_cache,
             get_favorites,
             create_favorite,
             delete_favorite,

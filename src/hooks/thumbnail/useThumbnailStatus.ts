@@ -6,6 +6,9 @@ export interface ThumbnailStatus {
   current_waiting: number
   current_processing: number
   available_slots: number
+  cache_size: number
+  cache_max_size: number
+  cache_memory_usage: number
 }
 
 export const useThumbnailStatus = (refreshInterval: number = 1000) => {
@@ -40,10 +43,25 @@ export const useThumbnailStatus = (refreshInterval: number = 1000) => {
     fetchStatus()
   }, [fetchStatus])
 
+  const clearCache = useCallback(async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      await invoke('clear_thumbnail_cache')
+      // 清理缓存后刷新状态
+      await fetchStatus()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '清理缓存失败')
+    } finally {
+      setIsLoading(false)
+    }
+  }, [fetchStatus])
+
   return {
     status,
     isLoading,
     error,
     refresh,
+    clearCache,
   }
 }

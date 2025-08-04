@@ -1,15 +1,17 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useThumbnailStatus } from '@/hooks/thumbnail/useThumbnailStatus'
+import { formatBytes } from '@/utils/stringUtil'
 
 interface ThumbnailStatusBarProps {
   className?: string
 }
 
 export const ThumbnailStatusBar: React.FC<ThumbnailStatusBarProps> = ({ className = '' }) => {
-  const { status, error } = useThumbnailStatus(1000)
+  const { status, error, clearCache } = useThumbnailStatus(1000)
+  const [showDetails, setShowDetails] = useState(false)
 
   // 如果没有任何活动（等待或处理中），则不显示状态栏
-  if (!status || (status.current_waiting === 0 && status.current_processing === 0)) {
+  if (!status) {
     return null
   }
 
@@ -25,6 +27,14 @@ export const ThumbnailStatusBar: React.FC<ThumbnailStatusBarProps> = ({ classNam
 
   const getProgressPercentage = () => {
     return (status.current_processing / status.max_concurrent) * 100
+  }
+
+  const handleClearCache = async () => {
+    try {
+      await clearCache()
+    } catch (err) {
+      console.error('清理缓存失败:', err)
+    }
   }
 
   if (error) {
@@ -54,6 +64,34 @@ export const ThumbnailStatusBar: React.FC<ThumbnailStatusBarProps> = ({ classNam
           {status.current_waiting > 0 && <span>{status.current_waiting}等待</span>}
         </div>
 
+        {/* 缓存信息 */}
+        <div className='flex items-center space-x-1 text-xs text-gray-500'>
+          <span>
+            缓存: {status.cache_size}/{status.cache_max_size}
+          </span>
+          <span>({formatBytes(status.cache_memory_usage)})</span>
+        </div>
+
+        {/* 操作按钮 */}
+        <div className='flex items-center space-x-1'>
+          <button
+            onClick={() => setShowDetails(!showDetails)}
+            className='text-xs text-blue-600 hover:text-blue-800 transition-colors'
+            title='显示详细信息'
+          >
+            ℹ️
+          </button>
+          {status.cache_size > 0 && (
+            <button
+              onClick={handleClearCache}
+              className='text-xs text-red-600 hover:text-red-800 transition-colors'
+              title='清理缓存'
+            >
+              🗑️
+            </button>
+          )}
+        </div>
+
         {/* 小进度条 */}
         <div className='w-12 h-1 bg-gray-200 rounded-full overflow-hidden'>
           <div
@@ -62,6 +100,23 @@ export const ThumbnailStatusBar: React.FC<ThumbnailStatusBarProps> = ({ classNam
           />
         </div>
       </div>
+
+      {/* 详细信息面板 */}
+      {showDetails && (
+        <div className='mt-2 pt-2 border-t border-gray-200 text-xs text-gray-600'>
+          <div className='grid grid-cols-2 gap-2'>
+            <div>最大并发: {status.max_concurrent}</div>
+            <div>可用槽位: {status.available_slots}</div>
+            <div>
+              缓存命中率:
+              {status.cache_size > 0
+                ? `${Math.round((status.cache_size / (status.cache_size + status.current_processing)) * 100)}%`
+                : 'N/A'}
+            </div>
+            <div>内存使用: {formatBytes(status.cache_memory_usage)}</div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

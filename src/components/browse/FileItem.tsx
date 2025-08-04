@@ -4,6 +4,7 @@ import { ArrowDownTrayIcon, TrashIcon } from '@heroicons/react/24/solid'
 import { useMemo, useState } from 'react'
 import { Thumbnail } from '../yuzu/Thumbnail'
 import { getFileIcon } from '@/utils/iconUtil'
+import { formatBytes } from '@/utils/stringUtil'
 
 interface FileItemProps {
   file: FileInfo
@@ -75,9 +76,7 @@ export const FileItem: React.FC<FileItemProps> = ({
 
         <div className='text-center w-full'>
           <p className='text-sm font-medium text-gray-900 truncate max-w-full'>{file.name}</p>
-          {!file.isDirectory && (
-            <p className='text-xs text-gray-500'>{formatFileSize(file.size)}</p>
-          )}
+          {!file.isDirectory && <p className='text-xs text-gray-500'>{formatBytes(file.size)}</p>}
         </div>
       </div>
 
@@ -111,12 +110,4 @@ export const FileItem: React.FC<FileItemProps> = ({
       )}
     </div>
   )
-
-  function formatFileSize(bytes: number): string {
-    if (bytes <= 0) return '0 B'
-    const k = 1024
-    const sizes = ['B', 'KB', 'MB', 'GB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return `${(bytes / Math.pow(k, i)).toFixed(2)} ${sizes[i]}`
-  }
 }
