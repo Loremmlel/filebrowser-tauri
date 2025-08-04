@@ -28,4 +28,3 @@ export const useAppInitialization = () => {
     initializeApp()
   }, [setServerUrl, serverUrl])
 }
-
