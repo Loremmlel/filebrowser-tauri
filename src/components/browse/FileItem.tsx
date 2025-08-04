@@ -1,6 +1,10 @@
 import { FileInfo, FileType } from '@/types/files'
-import { HeartIcon, HeartIcon as HeartSolidIcon } from '@heroicons/react/24/outline'
-import { ArrowDownTrayIcon, TrashIcon } from '@heroicons/react/24/solid'
+import { HeartIcon } from '@heroicons/react/24/outline'
+import {
+  ArrowDownTrayIcon,
+  TrashIcon,
+  HeartIcon as HeartSolidIcon,
+} from '@heroicons/react/24/solid'
 import { useMemo, useState } from 'react'
 import { Thumbnail } from '../yuzu/Thumbnail'
 import { getFileIcon } from '@/utils/iconUtil'
