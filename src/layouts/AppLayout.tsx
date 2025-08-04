@@ -10,11 +10,12 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   return (
     <ToastContainer>
       <div className='flex flex-col h-screen bg-gray-50'>
-        {/* 缩略图状态栏 */}
-        <ThumbnailStatusBar />
-
         {/* 主内容区域 */}
-        <main className='flex-1 overflow-hidden'>{children}</main>
+        <main className='relative flex-1 overflow-hidden'>
+          {children}
+          {/* 缩略图状态栏 */}
+          <ThumbnailStatusBar />
+        </main>
 
         {/* 底部导航 */}
         <BottomNav />
@@ -22,3 +23,4 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     </ToastContainer>
   )
 }
+

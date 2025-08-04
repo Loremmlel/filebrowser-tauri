@@ -40,7 +40,7 @@ export const ThumbnailStatusBar: React.FC<ThumbnailStatusBarProps> = ({ classNam
   if (error) {
     return (
       <div
-        className={`fixed top-2 right-2 z-50 bg-red-100 border border-red-300 rounded-lg px-3 py-2 shadow-sm ${className}`}
+        className={`absolute bottom-2 right-2 z-50 bg-red-100 border border-red-300 rounded-lg px-3 py-2 shadow-sm ${className}`}
       >
         <span className='text-red-700 text-xs'>状态获取失败</span>
       </div>
@@ -49,7 +49,7 @@ export const ThumbnailStatusBar: React.FC<ThumbnailStatusBarProps> = ({ classNam
 
   return (
     <div
-      className={`fixed top-2 right-2 z-50 bg-white border border-gray-200 rounded-lg px-3 py-2 shadow-sm backdrop-blur-sm bg-opacity-95 ${className}`}
+      className={`absolute bottom-2 right-2 z-50 bg-white border border-gray-200 rounded-lg px-3 py-2 shadow-sm backdrop-blur-sm bg-opacity-95 ${className}`}
     >
       <div className='flex items-center space-x-2'>
         {/* 状态指示器 */}
@@ -120,3 +120,4 @@ export const ThumbnailStatusBar: React.FC<ThumbnailStatusBarProps> = ({ classNam
     </div>
   )
 }
+
