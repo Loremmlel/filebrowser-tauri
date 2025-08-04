@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::OnceLock;
 use tauri::command;
@@ -7,6 +6,7 @@ use tokio::sync::{RwLock, Semaphore};
 
 use crate::models::error::ApiError;
 use crate::services::api_service::api_get_bytes;
+use crate::utils::lru_cache::LruCache;
 
 // 全局信号量，限制最多5个并发缩略图请求
 static THUMBNAIL_SEMAPHORE: OnceLock<Semaphore> = OnceLock::new();
@@ -15,73 +15,8 @@ static WAITING_COUNT: AtomicUsize = AtomicUsize::new(0);
 // 当前处理中请求数量统计
 static PROCESSING_COUNT: AtomicUsize = AtomicUsize::new(0);
 
-// 缩略图缓存
-#[derive(Clone)]
-struct CacheEntry {
-    data: Vec<u8>,
-    // 可以添加时间戳用于LRU策略
-    access_time: std::time::Instant,
-}
-
-struct ThumbnailCache {
-    cache: HashMap<String, CacheEntry>,
-    max_size: usize,
-}
-
-impl ThumbnailCache {
-    fn new(max_size: usize) -> Self {
-        Self {
-            cache: HashMap::new(),
-            max_size,
-        }
-    }
-
-    fn get(&mut self, key: &str) -> Option<Vec<u8>> {
-        if let Some(entry) = self.cache.get_mut(key) {
-            // 更新访问时间
-            entry.access_time = std::time::Instant::now();
-            Some(entry.data.clone())
-        } else {
-            None
-        }
-    }
-
-    fn put(&mut self, key: String, data: Vec<u8>) {
-        // 如果缓存已满，移除最旧的条目
-        if self.cache.len() >= self.max_size {
-            self.evict_oldest();
-        }
-
-        let entry = CacheEntry {
-            data,
-            access_time: std::time::Instant::now(),
-        };
-        self.cache.insert(key, entry);
-    }
-
-    fn evict_oldest(&mut self) {
-        if let Some((oldest_key, _)) = self
-            .cache
-            .iter()
-            .min_by_key(|(_, entry)| entry.access_time)
-            .map(|(k, v)| (k.clone(), v.access_time))
-        {
-            self.cache.remove(&oldest_key);
-        }
-    }
-
-    fn clear(&mut self) {
-        self.cache.clear();
-    }
-
-    fn size(&self) -> usize {
-        self.cache.len()
-    }
-
-    fn memory_usage(&self) -> usize {
-        self.cache.values().map(|entry| entry.data.len()).sum()
-    }
-}
+// 缩略图缓存类型别名
+type ThumbnailCache = LruCache<String, Vec<u8>>;
 
 // 全局缓存实例，容量设置为200个缩略图
 static THUMBNAIL_CACHE: OnceLock<RwLock<ThumbnailCache>> = OnceLock::new();
@@ -102,7 +37,7 @@ fn get_thumbnail_semaphore() -> &'static Semaphore {
 }
 
 fn get_thumbnail_cache() -> &'static RwLock<ThumbnailCache> {
-    THUMBNAIL_CACHE.get_or_init(|| RwLock::new(ThumbnailCache::new(200)))
+    THUMBNAIL_CACHE.get_or_init(|| RwLock::new(LruCache::new(200)))
 }
 
 #[command]
@@ -114,8 +49,8 @@ pub async fn get_thumbnail_status() -> ThumbnailStatus {
 
     // 获取缓存信息
     let cache = get_thumbnail_cache().read().await;
-    let cache_size = cache.size();
-    let cache_max_size = cache.max_size;
+    let cache_size = cache.len();
+    let cache_max_size = cache.max_size();
     let cache_memory_usage = cache.memory_usage();
     drop(cache); // 释放读锁
 
@@ -195,7 +130,7 @@ pub async fn get_thumbnail(path: String, server_url: String) -> Result<Vec<u8>, 
                 println!(
                     "[缩略图缓存] 已缓存 - 文件: {}, 缓存大小: {}",
                     path,
-                    cache.size()
+                    cache.len()
                 );
             }
         }
@@ -212,7 +147,7 @@ pub async fn get_thumbnail(path: String, server_url: String) -> Result<Vec<u8>, 
 #[command]
 pub async fn clear_thumbnail_cache() -> Result<(), ApiError> {
     let mut cache = get_thumbnail_cache().write().await;
-    let old_size = cache.size();
+    let old_size = cache.len();
     let old_memory = cache.memory_usage();
     cache.clear();
     println!(
