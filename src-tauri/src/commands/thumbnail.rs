@@ -71,20 +71,12 @@ pub async fn get_thumbnail(path: String, server_url: String) -> Result<Vec<u8>, 
     {
         let mut cache = get_thumbnail_cache().write().await;
         if let Some(cached_data) = cache.get(&path) {
-            println!("[缩略图缓存] 缓存命中 - 文件: {}", path);
             return Ok(cached_data);
         }
     }
 
     // 缓存未命中，增加等待计数
     WAITING_COUNT.fetch_add(1, Ordering::Relaxed);
-    let waiting_count = WAITING_COUNT.load(Ordering::Relaxed);
-    let processing_count = PROCESSING_COUNT.load(Ordering::Relaxed);
-
-    println!(
-        "[缩略图限流] 新请求排队 - 当前等待: {}, 处理中: {}, 文件: {}",
-        waiting_count, processing_count, path
-    );
 
     // 获取信号量许可，如果当前已有5个请求在处理，则等待
     let _permit = get_thumbnail_semaphore()
@@ -96,14 +88,6 @@ pub async fn get_thumbnail(path: String, server_url: String) -> Result<Vec<u8>, 
     WAITING_COUNT.fetch_sub(1, Ordering::Relaxed);
     PROCESSING_COUNT.fetch_add(1, Ordering::Relaxed);
 
-    let waiting_count = WAITING_COUNT.load(Ordering::Relaxed);
-    let processing_count = PROCESSING_COUNT.load(Ordering::Relaxed);
-
-    println!(
-        "[缩略图限流] 开始处理 - 当前等待: {}, 处理中: {}, 文件: {}",
-        waiting_count, processing_count, path
-    );
-
     // 执行实际的缩略图获取操作
     let result = async {
         let endpoint = format!("thumbnail?path={}", path);
@@ -113,31 +97,16 @@ pub async fn get_thumbnail(path: String, server_url: String) -> Result<Vec<u8>, 
 
     // 处理完成，减少处理计数
     PROCESSING_COUNT.fetch_sub(1, Ordering::Relaxed);
-    let waiting_count = WAITING_COUNT.load(Ordering::Relaxed);
-    let processing_count = PROCESSING_COUNT.load(Ordering::Relaxed);
 
     match &result {
         Ok(data) => {
-            println!(
-                "[缩略图限流] 处理成功 - 当前等待: {}, 处理中: {}, 文件: {}",
-                waiting_count, processing_count, path
-            );
-
             // 将结果存储到缓存
             {
                 let mut cache = get_thumbnail_cache().write().await;
                 cache.put(path.clone(), data.clone());
-                println!(
-                    "[缩略图缓存] 已缓存 - 文件: {}, 缓存大小: {}",
-                    path,
-                    cache.len()
-                );
             }
         }
-        Err(e) => println!(
-            "[缩略图限流] 处理失败 - 当前等待: {}, 处理中: {}, 文件: {}, 错误: {}",
-            waiting_count, processing_count, path, e
-        ),
+        Err(_e) => (),
     }
 
     result
@@ -147,12 +116,6 @@ pub async fn get_thumbnail(path: String, server_url: String) -> Result<Vec<u8>, 
 #[command]
 pub async fn clear_thumbnail_cache() -> Result<(), ApiError> {
     let mut cache = get_thumbnail_cache().write().await;
-    let old_size = cache.len();
-    let old_memory = cache.memory_usage();
     cache.clear();
-    println!(
-        "[缩略图缓存] 缓存已清理 - 原大小: {}, 原内存使用: {} bytes",
-        old_size, old_memory
-    );
     Ok(())
 }
