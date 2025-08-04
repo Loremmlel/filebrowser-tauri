@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useThumbnailStatus } from '@/hooks/thumbnail/useThumbnailStatus'
 import { formatBytes } from '@/utils/stringUtil'
+import { TrashIcon, InformationCircleIcon } from '@heroicons/react/24/solid'
 
 interface ThumbnailStatusBarProps {
   className?: string
@@ -79,7 +80,7 @@ export const ThumbnailStatusBar: React.FC<ThumbnailStatusBarProps> = ({ classNam
             className='text-xs text-blue-600 hover:text-blue-800 transition-colors'
             title='显示详细信息'
           >
-            ℹ️
+            <InformationCircleIcon className='w-4 h-4 inline' />
           </button>
           {status.cache_size > 0 && (
             <button
@@ -87,7 +88,7 @@ export const ThumbnailStatusBar: React.FC<ThumbnailStatusBarProps> = ({ classNam
               className='text-xs text-red-600 hover:text-red-800 transition-colors'
               title='清理缓存'
             >
-              🗑️
+              <TrashIcon className='w-4 h-4 inline' />
             </button>
           )}
         </div>
