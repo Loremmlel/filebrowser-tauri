@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { invoke } from '@tauri-apps/api/core'
+import { listen, type UnlistenFn } from '@tauri-apps/api/event'
 
 export interface ThumbnailStatus {
   max_concurrent: number
@@ -11,7 +12,7 @@ export interface ThumbnailStatus {
   cache_memory_usage: number
 }
 
-export const useThumbnailStatus = (refreshInterval: number = 1000) => {
+export const useThumbnailStatus = () => {
   const [status, setStatus] = useState<ThumbnailStatus | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -30,17 +31,30 @@ export const useThumbnailStatus = (refreshInterval: number = 1000) => {
   }, [])
 
   useEffect(() => {
+    let unlisten: UnlistenFn | null = null
+
     // 初始加载
     fetchStatus()
 
-    // 设置定时刷新
-    const interval = setInterval(fetchStatus, refreshInterval)
+    // 监听缩略图状态更新事件
+    const setupListener = async () => {
+      try {
+        unlisten = await listen<ThumbnailStatus>('thumbnail-status-update', event => {
+          setStatus(event.payload)
+          setError(null)
+        })
+      } catch (err) {
+        console.error('Failed to setup thumbnail status listener:', err)
+      }
+    }
 
-    return () => clearInterval(interval)
-  }, [fetchStatus, refreshInterval])
+    setupListener()
 
-  const refresh = useCallback(() => {
-    fetchStatus()
+    return () => {
+      if (unlisten) {
+        unlisten()
+      }
+    }
   }, [fetchStatus])
 
   const clearCache = useCallback(async () => {
@@ -61,7 +75,6 @@ export const useThumbnailStatus = (refreshInterval: number = 1000) => {
     status,
     isLoading,
     error,
-    refresh,
     clearCache,
   }
 }

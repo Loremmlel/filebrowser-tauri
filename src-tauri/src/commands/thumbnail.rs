@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::OnceLock;
-use tauri::command;
+use tauri::{command, AppHandle, Emitter};
 use tokio::sync::{RwLock, Semaphore};
 
 use crate::models::error::ApiError;
@@ -40,8 +40,15 @@ fn get_thumbnail_cache() -> &'static RwLock<ThumbnailCache> {
     THUMBNAIL_CACHE.get_or_init(|| RwLock::new(LruCache::new(200)))
 }
 
-#[command]
-pub async fn get_thumbnail_status() -> ThumbnailStatus {
+// 发送缩略图状态更新事件
+async fn emit_thumbnail_status_update(app: &AppHandle) {
+    if let Ok(status) = get_thumbnail_status_internal().await {
+        let _ = app.emit("thumbnail-status-update", &status);
+    }
+}
+
+// 内部获取状态的函数，避免重复代码
+async fn get_thumbnail_status_internal() -> Result<ThumbnailStatus, ApiError> {
     let semaphore = get_thumbnail_semaphore();
     let waiting = WAITING_COUNT.load(Ordering::Relaxed);
     let processing = PROCESSING_COUNT.load(Ordering::Relaxed);
@@ -54,7 +61,7 @@ pub async fn get_thumbnail_status() -> ThumbnailStatus {
     let cache_memory_usage = cache.memory_usage();
     drop(cache); // 释放读锁
 
-    ThumbnailStatus {
+    Ok(ThumbnailStatus {
         max_concurrent: 5,
         current_waiting: waiting,
         current_processing: processing,
@@ -62,11 +69,20 @@ pub async fn get_thumbnail_status() -> ThumbnailStatus {
         cache_size,
         cache_max_size,
         cache_memory_usage,
-    }
+    })
 }
 
 #[command]
-pub async fn get_thumbnail(path: String, server_url: String) -> Result<Vec<u8>, ApiError> {
+pub async fn get_thumbnail_status() -> Result<ThumbnailStatus, ApiError> {
+    get_thumbnail_status_internal().await
+}
+
+#[command]
+pub async fn get_thumbnail(
+    path: String,
+    server_url: String,
+    app: AppHandle,
+) -> Result<Vec<u8>, ApiError> {
     // 首先检查缓存
     {
         let mut cache = get_thumbnail_cache().write().await;
@@ -78,6 +94,9 @@ pub async fn get_thumbnail(path: String, server_url: String) -> Result<Vec<u8>, 
     // 缓存未命中，增加等待计数
     WAITING_COUNT.fetch_add(1, Ordering::Relaxed);
 
+    // 发送状态更新事件
+    emit_thumbnail_status_update(&app).await;
+
     // 获取信号量许可，如果当前已有5个请求在处理，则等待
     let _permit = get_thumbnail_semaphore()
         .acquire()
@@ -87,6 +106,9 @@ pub async fn get_thumbnail(path: String, server_url: String) -> Result<Vec<u8>, 
     // 减少等待计数，增加处理计数
     WAITING_COUNT.fetch_sub(1, Ordering::Relaxed);
     PROCESSING_COUNT.fetch_add(1, Ordering::Relaxed);
+
+    // 发送状态更新事件
+    emit_thumbnail_status_update(&app).await;
 
     // 执行实际的缩略图获取操作
     let result = async {
@@ -98,6 +120,9 @@ pub async fn get_thumbnail(path: String, server_url: String) -> Result<Vec<u8>, 
     // 处理完成，减少处理计数
     PROCESSING_COUNT.fetch_sub(1, Ordering::Relaxed);
 
+    // 发送状态更新事件
+    emit_thumbnail_status_update(&app).await;
+
     match &result {
         Ok(data) => {
             // 将结果存储到缓存
@@ -105,6 +130,8 @@ pub async fn get_thumbnail(path: String, server_url: String) -> Result<Vec<u8>, 
                 let mut cache = get_thumbnail_cache().write().await;
                 cache.put(path.clone(), data.clone());
             }
+            // 缓存更新后再次发送状态更新事件
+            emit_thumbnail_status_update(&app).await;
         }
         Err(_e) => (),
     }
@@ -114,8 +141,13 @@ pub async fn get_thumbnail(path: String, server_url: String) -> Result<Vec<u8>, 
 }
 
 #[command]
-pub async fn clear_thumbnail_cache() -> Result<(), ApiError> {
+pub async fn clear_thumbnail_cache(app: AppHandle) -> Result<(), ApiError> {
     let mut cache = get_thumbnail_cache().write().await;
     cache.clear();
+    drop(cache); // 释放锁
+
+    // 发送状态更新事件
+    emit_thumbnail_status_update(&app).await;
+
     Ok(())
 }

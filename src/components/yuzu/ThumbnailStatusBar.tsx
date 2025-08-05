@@ -8,7 +8,7 @@ interface ThumbnailStatusBarProps {
 }
 
 export const ThumbnailStatusBar: React.FC<ThumbnailStatusBarProps> = ({ className = '' }) => {
-  const { status, error, clearCache } = useThumbnailStatus(1000)
+  const { status, error, clearCache } = useThumbnailStatus()
   const [showDetails, setShowDetails] = useState(false)
 
   // 如果没有任何活动（等待或处理中），则不显示状态栏
