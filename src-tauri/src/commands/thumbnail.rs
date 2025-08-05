@@ -7,7 +7,6 @@ use tokio::sync::{RwLock, Semaphore};
 use crate::models::error::ApiError;
 use crate::repos::online::online_thumbnails_repo::OnlineThumbnailsRepo;
 use crate::repos::thumbnails_repo::ThumbnailsRepo;
-use crate::services::api_service::api_get_bytes;
 use crate::utils::lru_cache::LruCache;
 
 // 全局信号量，限制最多5个并发缩略图请求

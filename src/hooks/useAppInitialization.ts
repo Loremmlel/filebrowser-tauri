@@ -25,14 +25,16 @@ export const useAppInitialization = () => {
     initializeApp()
   }, [setServerUrl, serverUrl])
 
-  function configure(newBaseDir: string, newServerUrl: string, isOnline: boolean) {
+  async function configure(newBaseDir: string, newServerUrl: string, isOnline: boolean) {
     setBaseDir(newBaseDir)
     setServerUrl(newServerUrl)
     setOnline(isOnline)
-    invoke('set_app_config', {
-      baseDir: newBaseDir,
-      serverUrl: newServerUrl,
-      online: isOnline,
+    await invoke('set_app_config', {
+      config: {
+        baseDir: newBaseDir,
+        serverUrl: newServerUrl,
+        online: isOnline,
+      },
     })
     setShowInitModal(false)
   }
