@@ -154,12 +154,12 @@ export const FavoritePage: React.FC = () => {
       </div>
 
       {/* 创建收藏夹模态框 */}
-      {showCreateModal && (
-        <CreateFavoriteModal
-          onClose={() => setShowCreateModal(false)}
-          onConirm={handleCreateFavorite}
-        />
-      )}
+      <CreateFavoriteModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onConirm={handleCreateFavorite}
+      />
     </div>
   )
 }
+

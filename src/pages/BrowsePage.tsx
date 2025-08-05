@@ -114,16 +114,15 @@ export const BrowsePage: React.FC = () => {
       </div>
 
       {/* 收藏夹模态框 */}
-      {showAddToFavoritesModal && (
-        <AddToFavoritesModal
-          favorites={favorites}
-          onClose={() => {
-            setShowAddToFavoritesModal(false)
-            setCurrentFavoriteFile(null)
-          }}
-          onAdd={onAddToFavorites}
-        />
-      )}
+      <AddToFavoritesModal
+        isOpen={showAddToFavoritesModal}
+        favorites={favorites}
+        onClose={() => {
+          setShowAddToFavoritesModal(false)
+          setCurrentFavoriteFile(null)
+        }}
+        onAdd={onAddToFavorites}
+      />
 
       {/* 图片预览 */}
       {previewItem != null && previewItem.type === FileType.Image && (
@@ -138,3 +137,4 @@ export const BrowsePage: React.FC = () => {
     </div>
   )
 }
+
