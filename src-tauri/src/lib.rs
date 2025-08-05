@@ -11,6 +11,7 @@ use crate::commands::{
 
 mod commands;
 mod models;
+mod repos;
 mod services;
 mod utils;
 
