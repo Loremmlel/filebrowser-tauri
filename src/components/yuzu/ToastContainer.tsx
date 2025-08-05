@@ -1,7 +1,7 @@
 import { useToastStore, ToastType } from '@/stores/toastStore'
 import React from 'react'
 
-export const ToastContainer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const YuzuToastContainer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { message, visible, type } = useToastStore()
 
   // 根据类型获取样式

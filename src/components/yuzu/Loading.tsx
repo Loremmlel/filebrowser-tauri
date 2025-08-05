@@ -2,7 +2,7 @@ interface LoadingProps {
   className?: string
 }
 
-export const Loading: React.FC<LoadingProps> = ({ className }) => {
+export const YuzuLoading: React.FC<LoadingProps> = ({ className }) => {
   return (
     <div className={`${className} flex items-center justify-center bg-gray-100 rounded`}>
       <div

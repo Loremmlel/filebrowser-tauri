@@ -1,7 +1,7 @@
 import { AddToFavoritesModal } from '@/components/browse/AddToFavoritesModal'
 import { BreadCrumb } from '@/components/browse/BreadCrumb'
 import { FileItem } from '@/components/browse/FileItem'
-import { ImageViewer } from '@/components/yuzu/ImageViewer'
+import { YuzuImageViewer } from '@/components/yuzu/ImageViewer'
 import { useBrowseData } from '@/hooks/browse/useBrowseData'
 import { useFavoriteOperations } from '@/hooks/browse/useFavoriteOperations'
 import { useFileOperations } from '@/hooks/browse/useFileOperations'
@@ -126,7 +126,7 @@ export const BrowsePage: React.FC = () => {
 
       {/* 图片预览 */}
       {previewItem != null && previewItem.type === FileType.Image && (
-        <ImageViewer
+        <YuzuImageViewer
           file={previewItem}
           onClose={() => handleClosePreview()}
           onNext={() => handleImageNavigation('next')}

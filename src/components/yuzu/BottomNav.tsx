@@ -25,7 +25,7 @@ const navItems: NavItem[] = [
   },
 ]
 
-export const BottomNav: React.FC = () => {
+export const YuzuBottomNav: React.FC = () => {
   const location = useLocation()
   const navigate = useNavigate()
 

@@ -1,6 +1,6 @@
 import { FavoriteDto } from '@/types/favorite'
 import { useState } from 'react'
-import { Modal } from '../yuzu/Modal'
+import { YuzuModal } from '../yuzu/Modal'
 
 interface AddFavoritesModalProps {
   isOpen: boolean
@@ -45,7 +45,7 @@ export const AddToFavoritesModal: React.FC<AddFavoritesModalProps> = ({
   )
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title='添加到收藏夹' footer={footer}>
+    <YuzuModal isOpen={isOpen} onClose={onClose} title='添加到收藏夹' footer={footer}>
       <label className='block text-sm font-medium text-gray-700 mb-2'>选择收藏夹</label>
       <select
         value={selectedFavoriteId ?? ''}
@@ -60,6 +60,6 @@ export const AddToFavoritesModal: React.FC<AddFavoritesModalProps> = ({
           </option>
         ))}
       </select>
-    </Modal>
+    </YuzuModal>
   )
 }

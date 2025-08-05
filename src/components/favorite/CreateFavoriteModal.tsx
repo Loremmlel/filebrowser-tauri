@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react'
-import { Modal } from '../yuzu/Modal'
+import { YuzuModal } from '../yuzu/Modal'
 
 interface CreateFavoriteModalProps {
   isOpen: boolean
@@ -45,7 +45,7 @@ export const CreateFavoriteModal: React.FC<CreateFavoriteModalProps> = ({
   )
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title='创建收藏夹' footer={footer}>
+    <YuzuModal isOpen={isOpen} onClose={onClose} title='创建收藏夹' footer={footer}>
       <form id='create-favorite-form' onSubmit={handleSubmit} className='space-y-4'>
         <div>
           <label className='block text-sm font-medium text-gray-700 mb-2'>收藏夹名称</label>
@@ -71,6 +71,6 @@ export const CreateFavoriteModal: React.FC<CreateFavoriteModalProps> = ({
           />
         </div>
       </form>
-    </Modal>
+    </YuzuModal>
   )
 }

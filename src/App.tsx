@@ -6,7 +6,7 @@ import { BrowsePage } from './pages/BrowsePage'
 import { FavoritePage } from './pages/FavoritePage'
 import { useAppInitialization } from './hooks/useAppInitialization'
 import { useState } from 'react'
-import { Modal } from './components/yuzu/Modal'
+import { YuzuModal } from './components/yuzu/Modal'
 
 function App() {
   // 初始化应用，根据平台设置服务器地址
@@ -31,7 +31,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Modal
+      <YuzuModal
         isOpen={showInitModal}
         onClose={() => {}}
         title='应用初始化'
@@ -87,7 +87,7 @@ function App() {
             />
           </div>
         )}
-      </Modal>
+      </YuzuModal>
 
       {!showInitModal && (
         <AppLayout>

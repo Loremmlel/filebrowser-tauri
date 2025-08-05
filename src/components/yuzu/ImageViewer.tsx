@@ -7,7 +7,7 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/solid'
 import { useState } from 'react'
-import { Loading } from './Loading'
+import { YuzuLoading } from './Loading'
 
 interface ImageViewerProps {
   file: FileInfo
@@ -17,7 +17,7 @@ interface ImageViewerProps {
   onDownlaod?: () => void
 }
 
-export const ImageViewer: React.FC<ImageViewerProps> = ({
+export const YuzuImageViewer: React.FC<ImageViewerProps> = ({
   file,
   onClose,
   onNext,
@@ -81,7 +81,7 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({
 
       {/* 图片内容 */}
       <div className='w-full h-full flex items-center justify-center p-16'>
-        {loading && <Loading />}
+        {loading && <YuzuLoading />}
 
         {error ? (
           <div className='text-white text-center'>

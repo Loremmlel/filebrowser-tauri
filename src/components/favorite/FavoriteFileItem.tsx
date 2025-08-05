@@ -1,7 +1,7 @@
 import { FileInfo, FileType } from '@/types/files'
 import { getFileIcon } from '@/utils/iconUtil'
 import { useMemo } from 'react'
-import { Thumbnail } from '../yuzu/Thumbnail'
+import { YuzuThumbnail } from '../yuzu/Thumbnail'
 
 interface FavoriteHeaderProps {
   file: FileInfo
@@ -19,7 +19,7 @@ export const FavoriteFileItem: React.FC<FavoriteHeaderProps> = ({ file, onClick 
     >
       <div className='w-full h-full flex items-center justify-center p-2'>
         {file.type === FileType.Image || file.type === FileType.Video ? (
-          <Thumbnail file={file} className='w-full h-full rounded' />
+          <YuzuThumbnail file={file} className='w-full h-full rounded' />
         ) : (
           FileIcon
         )}

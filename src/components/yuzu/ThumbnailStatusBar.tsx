@@ -7,7 +7,7 @@ interface ThumbnailStatusBarProps {
   className?: string
 }
 
-export const ThumbnailStatusBar: React.FC<ThumbnailStatusBarProps> = ({ className = '' }) => {
+export const YuzuThumbnailStatusBar: React.FC<ThumbnailStatusBarProps> = ({ className = '' }) => {
   const { status, error, clearCache } = useThumbnailStatus()
   const [showDetails, setShowDetails] = useState(false)
 

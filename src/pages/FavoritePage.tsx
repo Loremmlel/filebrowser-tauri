@@ -1,7 +1,7 @@
 import { CreateFavoriteModal } from '@/components/favorite/CreateFavoriteModal'
 import { FavoriteHeader } from '@/components/favorite/FavoriteHeader'
 import { FavoriteItem } from '@/components/favorite/FavoriteItem'
-import { Loading } from '@/components/yuzu/Loading'
+import { YuzuLoading } from '@/components/yuzu/Loading'
 import { ROUTES } from '@/constants/routes'
 import { useFavoriteData } from '@/hooks/favorite/useFavoriteData'
 import { useFavoriteSelection } from '@/hooks/favorite/useFavoriteSelection'
@@ -92,7 +92,7 @@ export const FavoritePage: React.FC = () => {
         {loading ? (
           <div className='flex items-center justify-center h-64'>
             <div className='text-center'>
-              <Loading className='w-8 h-8' />
+              <YuzuLoading className='w-8 h-8' />
             </div>
           </div>
         ) : favorites.length === 0 ? (

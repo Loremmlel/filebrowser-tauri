@@ -13,7 +13,7 @@ interface ModalProps {
   closeOnEscape?: boolean
 }
 
-export const Modal: React.FC<ModalProps> = ({
+export const YuzuModal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   title,

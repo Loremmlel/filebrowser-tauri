@@ -6,7 +6,7 @@ import {
   HeartIcon as HeartSolidIcon,
 } from '@heroicons/react/24/solid'
 import { useMemo, useState } from 'react'
-import { Thumbnail } from '../yuzu/Thumbnail'
+import { YuzuThumbnail } from '../yuzu/Thumbnail'
 import { getFileIcon } from '@/utils/iconUtil'
 import { formatBytes } from '@/utils/stringUtil'
 
@@ -72,7 +72,7 @@ export const FileItem: React.FC<FileItemProps> = ({
       <div className='flex flex-col items-center space-y-2 cursor-pointer' onClick={onClick}>
         <div className='w-16 h-16 flex items-center justify-center overflow-hidden rounded'>
           {file.type === FileType.Image || file.type === FileType.Video ? (
-            <Thumbnail file={file} className='w-full h-full' />
+            <YuzuThumbnail file={file} className='w-full h-full' />
           ) : (
             FileIcon
           )}
