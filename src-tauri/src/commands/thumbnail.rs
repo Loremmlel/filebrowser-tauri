@@ -94,7 +94,6 @@ pub async fn get_thumbnail(
     // 缓存未命中，增加等待计数
     WAITING_COUNT.fetch_add(1, Ordering::Relaxed);
 
-    // 发送状态更新事件
     emit_thumbnail_status_update(&app).await;
 
     // 获取信号量许可，如果当前已有5个请求在处理，则等待
@@ -107,7 +106,6 @@ pub async fn get_thumbnail(
     WAITING_COUNT.fetch_sub(1, Ordering::Relaxed);
     PROCESSING_COUNT.fetch_add(1, Ordering::Relaxed);
 
-    // 发送状态更新事件
     emit_thumbnail_status_update(&app).await;
 
     // 执行实际的缩略图获取操作
@@ -120,7 +118,6 @@ pub async fn get_thumbnail(
     // 处理完成，减少处理计数
     PROCESSING_COUNT.fetch_sub(1, Ordering::Relaxed);
 
-    // 发送状态更新事件
     emit_thumbnail_status_update(&app).await;
 
     match &result {

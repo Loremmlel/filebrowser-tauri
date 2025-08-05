@@ -51,9 +51,7 @@ export const useThumbnailStatus = () => {
     setupListener()
 
     return () => {
-      if (unlisten) {
-        unlisten()
-      }
+      unlisten?.()
     }
   }, [fetchStatus])
 
