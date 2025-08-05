@@ -1,5 +1,5 @@
-use crate::models::api_response::ApiResponse;
 use crate::models::error::ApiError;
+use crate::{commands::config::get_app_config, models::api_response::ApiResponse};
 use reqwest::{Client, Method, Response};
 use serde::{Deserialize, Serialize};
 use std::sync::OnceLock;
@@ -12,11 +12,12 @@ fn get_client() -> &'static Client {
 }
 
 /// 构建完整的 URL
-fn build_url(base_url: &str, endpoint: &str) -> String {
+fn build_url(endpoint: &str) -> String {
+    let server_url = get_app_config().server_url;
     if endpoint.starts_with('/') {
-        format!("{}{}", base_url, endpoint)
+        format!("{}{}", server_url, endpoint)
     } else {
-        format!("{}/{}", base_url, endpoint)
+        format!("{}/{}", server_url, endpoint)
     }
 }
 
@@ -48,12 +49,8 @@ async fn handle_response_error(response: Response) -> Result<Response, ApiError>
 }
 
 /// 发送请求并获取原始响应
-async fn send_request(
-    base_url: &str,
-    method: Method,
-    endpoint: &str,
-) -> Result<Response, ApiError> {
-    let url = build_url(base_url, endpoint);
+async fn send_request(method: Method, endpoint: &str) -> Result<Response, ApiError> {
+    let url = build_url(endpoint);
     let client = get_client();
 
     let request = match method {
@@ -74,12 +71,11 @@ async fn send_request(
 
 /// 发送请求并附带 JSON 数据
 async fn send_request_with_json<T: Serialize>(
-    base_url: &str,
     method: Method,
     endpoint: &str,
     json_data: &T,
 ) -> Result<Response, ApiError> {
-    let url = build_url(base_url, endpoint);
+    let url = build_url(endpoint);
     let client = get_client();
 
     let request = match method {
@@ -111,49 +107,44 @@ async fn parse_api_response<T: for<'de> Deserialize<'de>>(
 }
 
 /// GET 请求并解析为 ApiResponse<T>
-pub async fn api_get<T: for<'de> Deserialize<'de>>(
-    base_url: &str,
-    endpoint: &str,
-) -> Result<T, ApiError> {
-    let response = send_request(base_url, Method::GET, endpoint).await?;
+pub async fn api_get<T: for<'de> Deserialize<'de>>(endpoint: &str) -> Result<T, ApiError> {
+    let response = send_request(Method::GET, endpoint).await?;
     parse_api_response(response).await
 }
 
 /// POST 请求并解析为 ApiResponse<T>
 pub async fn api_post<T: for<'de> Deserialize<'de>, R: Serialize>(
-    base_url: &str,
     endpoint: &str,
     json_data: &R,
 ) -> Result<T, ApiError> {
-    let response = send_request_with_json(base_url, Method::POST, endpoint, json_data).await?;
+    let response = send_request_with_json(Method::POST, endpoint, json_data).await?;
     parse_api_response(response).await
 }
 
 /// POST 请求并返回是否成功
 pub async fn api_post_success<R: Serialize>(
-    base_url: &str,
     endpoint: &str,
     json_data: &R,
 ) -> Result<bool, ApiError> {
-    let response = send_request_with_json(base_url, Method::POST, endpoint, json_data).await?;
+    let response = send_request_with_json(Method::POST, endpoint, json_data).await?;
     Ok(response.status().is_success())
 }
 
 /// DELETE 请求
-pub async fn api_delete(base_url: &str, endpoint: &str) -> Result<(), ApiError> {
-    send_request(base_url, Method::DELETE, endpoint).await?;
+pub async fn api_delete(endpoint: &str) -> Result<(), ApiError> {
+    send_request(Method::DELETE, endpoint).await?;
     Ok(())
 }
 
 /// DELETE 请求并返回是否成功
-pub async fn api_delete_success(base_url: &str, endpoint: &str) -> Result<bool, ApiError> {
-    let response = send_request(base_url, Method::DELETE, endpoint).await?;
+pub async fn api_delete_success(endpoint: &str) -> Result<bool, ApiError> {
+    let response = send_request(Method::DELETE, endpoint).await?;
     Ok(response.status().is_success())
 }
 
 /// GET 请求并返回字节数据（用于文件下载）
-pub async fn api_get_bytes(base_url: &str, endpoint: &str) -> Result<Vec<u8>, ApiError> {
-    let response = send_request(base_url, Method::GET, endpoint).await?;
+pub async fn api_get_bytes(endpoint: &str) -> Result<Vec<u8>, ApiError> {
+    let response = send_request(Method::GET, endpoint).await?;
 
     let bytes = response
         .bytes()

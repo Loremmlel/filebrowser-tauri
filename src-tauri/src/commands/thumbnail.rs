@@ -78,11 +78,7 @@ pub async fn get_thumbnail_status() -> Result<ThumbnailStatus, ApiError> {
 }
 
 #[command]
-pub async fn get_thumbnail(
-    path: String,
-    server_url: String,
-    app: AppHandle,
-) -> Result<Vec<u8>, ApiError> {
+pub async fn get_thumbnail(path: String, app: AppHandle) -> Result<Vec<u8>, ApiError> {
     // 首先检查缓存
     {
         let mut cache = get_thumbnail_cache().write().await;
@@ -111,7 +107,7 @@ pub async fn get_thumbnail(
     // 执行实际的缩略图获取操作
     let result = async {
         let endpoint = format!("thumbnail?path={}", path);
-        api_get_bytes(&server_url, &endpoint).await
+        api_get_bytes(&endpoint).await
     }
     .await;
 
