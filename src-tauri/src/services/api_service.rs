@@ -1,5 +1,6 @@
+use crate::commands::config::with_config;
+use crate::models::api_response::ApiResponse;
 use crate::models::error::ApiError;
-use crate::{commands::config::get_app_config, models::api_response::ApiResponse};
 use reqwest::{Client, Method, Response};
 use serde::{Deserialize, Serialize};
 use std::sync::OnceLock;
@@ -13,12 +14,13 @@ fn get_client() -> &'static Client {
 
 /// 构建完整的 URL
 fn build_url(endpoint: &str) -> String {
-    let server_url = get_app_config().server_url;
-    if endpoint.starts_with('/') {
-        format!("{}{}", server_url, endpoint)
-    } else {
-        format!("{}/{}", server_url, endpoint)
-    }
+    with_config(|config| {
+        if endpoint.starts_with('/') {
+            format!("{}{}", config.server_url, endpoint)
+        } else {
+            format!("{}/{}", config.server_url, endpoint)
+        }
+    })
 }
 
 /// 检查响应状态码并处理错误

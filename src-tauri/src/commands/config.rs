@@ -26,14 +26,24 @@ lazy_static! {
     static ref APP_CONFIG: Arc<RwLock<AppConfig>> = Arc::new(RwLock::new(AppConfig::default()));
 }
 
+pub fn with_config<T>(f: impl FnOnce(&AppConfig) -> T) -> T {
+    let config = APP_CONFIG.read().unwrap();
+    f(&config)
+}
+
+pub fn with_config_mut<T>(f: impl FnOnce(&mut AppConfig) -> T) -> T {
+    let mut config = APP_CONFIG.write().unwrap();
+    f(&mut config)
+}
+
 #[command]
 pub fn get_app_config() -> AppConfig {
-    let config = APP_CONFIG.read().unwrap();
-    config.clone()
+    with_config(|config| config.clone())
 }
 
 #[command]
 pub fn set_app_config(config: AppConfig) {
-    let mut app_config = APP_CONFIG.write().unwrap();
-    *app_config = config;
+    with_config_mut(|current_config| {
+        *current_config = config;
+    });
 }

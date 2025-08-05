@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { invoke } from '@tauri-apps/api/core'
 import { useConfigStore } from '../stores/configStore'
+import { toast } from '@/utils/toast'
 
 export const useAppInitialization = () => {
   const [showInitModal, setShowInitModal] = useState(true)
@@ -36,6 +37,7 @@ export const useAppInitialization = () => {
         online: isOnline,
       },
     })
+    toast.success('应用配置已保存')
     setShowInitModal(false)
   }
 
