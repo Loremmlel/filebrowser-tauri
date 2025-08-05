@@ -980,6 +980,7 @@ name = "filebrowser-tauri"
 version = "0.1.0"
 dependencies = [
  "dirs 5.0.1",
+ "lazy_static",
  "reqwest 0.11.27",
  "serde",
  "serde_json",

@@ -60,7 +60,7 @@ export const AddToFavoritesModal: React.FC<AddFavoritesModalProps> = ({
           <button
             onClick={handleAdd}
             disabled={selectedFavoriteId == null}
-            className='flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded-md 
+            className='flex-1 bg-gray-200 text-white py-2 px-4 rounded-md
             hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors'
           >
             添加

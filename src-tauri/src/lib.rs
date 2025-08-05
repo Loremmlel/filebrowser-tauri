@@ -1,4 +1,5 @@
 use crate::commands::{
+    config::{get_app_config, set_app_config},
     favorites::{
         add_file_to_favorite, create_favorite, delete_favorite, delete_favorite_file,
         get_all_favorite_files, get_favorites,
@@ -18,6 +19,8 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
+            get_app_config,
+            set_app_config,
             get_platform,
             get_files,
             delete_file,
