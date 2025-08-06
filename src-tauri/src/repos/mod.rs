@@ -6,6 +6,7 @@ pub mod files_repo;
 pub mod offline;
 pub mod online;
 pub mod thumbnails_repo;
+pub mod transcode_repo;
 
 pub trait Repo {
     type Id;

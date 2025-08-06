@@ -12,8 +12,8 @@ pub struct OnlineFilesRepo;
 impl Repo for OnlineFilesRepo {
     type Id = String;
     type Item = FileInfo;
-    type UpdateRequest = ();
     type CreateRequest = ();
+    type UpdateRequest = ();
 
     async fn delete(_id: Self::Id) -> Result<bool, ApiError> {
         let endpoint = format!("files?path={}", _id);
