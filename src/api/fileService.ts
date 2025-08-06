@@ -3,8 +3,7 @@ import { invoke } from '@tauri-apps/api/core'
 
 class FileService {
   async getFiles(path: string): Promise<FileInfo[]> {
-    const files = await invoke<FileInfo[]>('get_files', { path })
-    return files
+    return await invoke<FileInfo[]>('get_files', { path })
   }
 
   async deleteFile(path: string): Promise<void> {

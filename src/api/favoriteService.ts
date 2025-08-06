@@ -4,36 +4,30 @@ import { invoke } from '@tauri-apps/api/core'
 
 class FavoriteService {
   async getFavorites(): Promise<FavoriteDto[]> {
-    const favorites = await invoke<FavoriteDto[]>('get_favorites')
-    return favorites
+    return await invoke<FavoriteDto[]>('get_favorites')
   }
 
   async createFavorite(request: CreateFavoriteRequest): Promise<FavoriteDto> {
-    const favorite = await invoke<FavoriteDto>('create_favorite', { request })
-    return favorite
+    return await invoke<FavoriteDto>('create_favorite', { request })
   }
 
   async deleteFavorite(favoriteId: number): Promise<boolean> {
-    const result = await invoke<boolean>('delete_favorite', { favoriteId })
-    return result
+    return await invoke<boolean>('delete_favorite', { favoriteId })
   }
 
   async addFileToFavorite(request: AddFileToFavoriteRequest, favoriteId: number): Promise<boolean> {
-    const result = await invoke<boolean>('add_file_to_favorite', {
+    return await invoke<boolean>('add_file_to_favorite', {
       request,
       favoriteId,
     })
-    return result
   }
 
   async getAllFavoriteFiles(): Promise<FavoriteFileDto[]> {
-    const files = await invoke<FavoriteFileDto[]>('get_all_favorite_files')
-    return files
+    return await invoke<FavoriteFileDto[]>('get_all_favorite_files')
   }
 
   async deleteFavoriteFile(id: number): Promise<boolean> {
-    const result = await invoke<boolean>('delete_favorite_file', { id })
-    return result
+    return await invoke<boolean>('delete_favorite_file', { id })
   }
 }
 

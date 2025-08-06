@@ -84,4 +84,3 @@ export const YuzuModal: React.FC<ModalProps> = ({
     </div>
   )
 }
-

@@ -162,4 +162,3 @@ export const FavoritePage: React.FC = () => {
     </div>
   )
 }
-

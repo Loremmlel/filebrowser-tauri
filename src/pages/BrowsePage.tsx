@@ -137,4 +137,3 @@ export const BrowsePage: React.FC = () => {
     </div>
   )
 }
-

@@ -23,4 +23,3 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     </YuzuToastContainer>
   )
 }
-

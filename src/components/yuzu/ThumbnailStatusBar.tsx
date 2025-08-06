@@ -121,4 +121,3 @@ export const YuzuThumbnailStatusBar: React.FC<ThumbnailStatusBarProps> = ({ clas
     </div>
   )
 }
-
