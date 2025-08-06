@@ -2,6 +2,7 @@ import { ROUTES } from '@/constants/routes'
 import { HomeIcon, StarIcon } from '@heroicons/react/24/outline'
 import { HomeIcon as HomeIconSolid, StarIcon as StarIconSolid } from '@heroicons/react/24/solid'
 import { useLocation, useNavigate } from 'react-router-dom'
+import React from 'react'
 
 interface NavItem {
   route: string

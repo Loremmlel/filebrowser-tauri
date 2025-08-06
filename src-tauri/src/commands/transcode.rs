@@ -19,6 +19,7 @@ pub async fn start_transcode(path: String, app: AppHandle) -> Result<TranscodeSt
     }
 }
 
+#[command]
 pub async fn stop_transcode(id: String) -> Result<bool, ApiError> {
     OnlineTranscodeRepo::stop_pooling_status().await;
     OnlineTranscodeRepo::delete(id).await

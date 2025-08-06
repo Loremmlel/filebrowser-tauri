@@ -1,13 +1,15 @@
 import React, { useState } from 'react'
 import { useThumbnailStatus } from '@/hooks/thumbnail/useThumbnailStatus'
 import { formatBytes } from '@/utils/stringUtil'
-import { TrashIcon, InformationCircleIcon } from '@heroicons/react/24/solid'
+import { InformationCircleIcon, TrashIcon } from '@heroicons/react/24/solid'
 
-interface ThumbnailStatusBarProps {
+interface YuzuThumbnailStatusBarProps {
   className?: string
 }
 
-export const YuzuThumbnailStatusBar: React.FC<ThumbnailStatusBarProps> = ({ className = '' }) => {
+export const YuzuThumbnailStatusBar: React.FC<YuzuThumbnailStatusBarProps> = ({
+  className = '',
+}) => {
   const { status, error, clearCache } = useThumbnailStatus()
   const [showDetails, setShowDetails] = useState(false)
 

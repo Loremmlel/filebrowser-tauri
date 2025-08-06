@@ -1,8 +1,10 @@
-interface LoadingProps {
+import React from 'react'
+
+interface YuzuLoadingProps {
   className?: string
 }
 
-export const YuzuLoading: React.FC<LoadingProps> = ({ className }) => {
+export const YuzuLoading: React.FC<YuzuLoadingProps> = ({ className }) => {
   return (
     <div className={`${className} flex items-center justify-center bg-gray-100 rounded`}>
       <div

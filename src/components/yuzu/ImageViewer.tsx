@@ -6,10 +6,10 @@ import {
   ChevronRightIcon,
   XMarkIcon,
 } from '@heroicons/react/24/solid'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { YuzuLoading } from './Loading'
 
-interface ImageViewerProps {
+interface YuzuImageViewerProps {
   file: FileInfo
   onClose: () => void
   onNext: () => void
@@ -17,7 +17,7 @@ interface ImageViewerProps {
   onDownlaod?: () => void
 }
 
-export const YuzuImageViewer: React.FC<ImageViewerProps> = ({
+export const YuzuImageViewer: React.FC<YuzuImageViewerProps> = ({
   file,
   onClose,
   onNext,

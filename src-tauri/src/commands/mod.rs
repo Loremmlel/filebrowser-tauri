@@ -3,4 +3,4 @@ pub mod favorites;
 pub mod files;
 pub mod os;
 pub mod thumbnail;
-mod transcode;
+pub mod transcode;

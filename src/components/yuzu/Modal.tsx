@@ -1,7 +1,7 @@
 import { XMarkIcon } from '@heroicons/react/24/solid'
-import { ReactNode, useEffect } from 'react'
+import React, { ReactNode, useEffect } from 'react'
 
-interface ModalProps {
+interface YuzuModalProps {
   isOpen: boolean
   onClose: () => void
   title: string
@@ -13,7 +13,7 @@ interface ModalProps {
   closeOnEscape?: boolean
 }
 
-export const YuzuModal: React.FC<ModalProps> = ({
+export const YuzuModal: React.FC<YuzuModalProps> = ({
   isOpen,
   onClose,
   title,

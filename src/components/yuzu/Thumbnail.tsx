@@ -1,15 +1,15 @@
 import { fileService } from '@/api/fileService'
 import { FileInfo, FileType } from '@/types/files'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { YuzuLoading } from './Loading'
 import { PhotoIcon, VideoCameraIcon } from '@heroicons/react/24/solid'
 
-interface ThumbnailProps {
+interface YuzuThumbnailProps {
   file: FileInfo
   className?: string
 }
 
-export const YuzuThumbnail: React.FC<ThumbnailProps> = ({ file, className }) => {
+export const YuzuThumbnail: React.FC<YuzuThumbnailProps> = ({ file, className }) => {
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<boolean>(false)

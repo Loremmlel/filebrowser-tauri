@@ -1,0 +1,75 @@
+import { useCallback, useEffect, useState } from 'react'
+import { TranscodeStatus } from '@/types/transcode.ts'
+import { listen, UnlistenFn } from '@tauri-apps/api/event'
+import { invoke } from '@tauri-apps/api/core'
+
+export const useTranscodeStatus = () => {
+  const [status, setStatus] = useState<TranscodeStatus | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let unlisten: UnlistenFn | null = null
+
+    const setupListener = async () => {
+      try {
+        unlisten = await listen<TranscodeStatus>('transcode-status-update', event => {
+          setStatus(event.payload)
+          setError(event.payload.error ?? null)
+        })
+      } catch (error) {
+        console.error('设置tauri监听器失败: ', error)
+      }
+    }
+    setupListener()
+
+    return () => {
+      unlisten?.()
+    }
+  }, [])
+  const startTranscode = useCallback(async (path: string) => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      const result = await invoke<TranscodeStatus>('start_transcode', { path })
+      setStatus(result)
+      return result
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : '启动转码失败'
+      setError(errorMsg)
+      throw err
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
+  const stopTranscode = useCallback(async () => {
+    if (!status?.id) return
+
+    try {
+      setIsLoading(true)
+      await invoke('stop_transcode', { id: status.id })
+      setStatus(null)
+      setError(null)
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : '停止转码失败'
+      setError(errorMsg)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [status?.id])
+
+  const clearStatus = useCallback(() => {
+    setStatus(null)
+    setError(null)
+  }, [])
+
+  return {
+    status,
+    isLoading,
+    error,
+    startTranscode,
+    stopTranscode,
+    clearStatus,
+  }
+}

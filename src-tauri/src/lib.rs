@@ -1,3 +1,4 @@
+use crate::commands::transcode::{start_transcode, stop_transcode};
 use crate::commands::{
     config::{get_app_config, set_app_config},
     favorites::{
@@ -35,6 +36,8 @@ pub fn run() {
             add_file_to_favorite,
             get_all_favorite_files,
             delete_favorite_file,
+            start_transcode,
+            stop_transcode
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
