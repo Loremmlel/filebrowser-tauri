@@ -24,7 +24,8 @@ export const useFavoriteSelection = () => {
     const successes = await Promise.all(
       selectedIds.map(id => {
         try {
-          favoriteService.deleteFavoriteFile(id)
+          // fix: 写错了，应该是删除收藏夹，而不是收藏文件
+          favoriteService.deleteFavorite(id)
           return true
         } catch {
           return false
