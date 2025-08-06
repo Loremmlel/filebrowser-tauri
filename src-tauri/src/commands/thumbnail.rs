@@ -6,6 +6,7 @@ use tokio::sync::{RwLock, Semaphore};
 
 use crate::models::error::ApiError;
 use crate::repos::online::online_thumbnails_repo::OnlineThumbnailsRepo;
+use crate::repos::Repo;
 use crate::repos::thumbnails_repo::ThumbnailsRepo;
 use crate::utils::lru_cache::LruCache;
 
@@ -106,7 +107,7 @@ pub async fn get_thumbnail(path: String, app: AppHandle) -> Result<Vec<u8>, ApiE
     emit_thumbnail_status_update(&app).await;
 
     // 执行实际的缩略图获取操作
-    let result = OnlineThumbnailsRepo::get_thumbnail(&path).await;
+    let result = OnlineThumbnailsRepo::get(path.clone()).await;
 
     // 处理完成，减少处理计数
     PROCESSING_COUNT.fetch_sub(1, Ordering::Relaxed);

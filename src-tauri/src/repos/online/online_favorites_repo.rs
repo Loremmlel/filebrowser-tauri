@@ -9,14 +9,29 @@ use crate::{
 
 pub struct OnlineFavoritesRepo;
 
-impl Repo for OnlineFavoritesRepo {}
+impl Repo for OnlineFavoritesRepo {
+    type Id = i64;
+    type Item = FavoriteDto;
+    type CreateRequest = CreateFavoriteRequest;
+    type UpdateRequest = ();
+
+    async fn create(_data: Self::CreateRequest) -> Result<Self::Item, ApiError> {
+        api_post("favorites", &_data).await
+    }
+
+    async fn get_all() -> Result<Vec<Self::Item>, ApiError> {
+        api_get("favorites").await
+    }
+
+    async fn delete(_id: i64) -> Result<bool, ApiError> {
+        let endpoint = format!("favorites/{}", _id);
+        api_delete_success(&endpoint).await
+    }
+}
 
 impl OnlineRepo for OnlineFavoritesRepo {}
 
 impl FavoritesRepo for OnlineFavoritesRepo {
-    async fn get_favorites() -> Result<Vec<FavoriteDto>, ApiError> {
-        api_get("favorites").await
-    }
 
     async fn add_file_to_favorite(
         request: AddFileToFavoriteRequest,
@@ -32,15 +47,6 @@ impl FavoritesRepo for OnlineFavoritesRepo {
 
     async fn delete_favorite_file(id: i64) -> Result<bool, ApiError> {
         let endpoint = format!("favorites/files/{}", id);
-        api_delete_success(&endpoint).await
-    }
-
-    async fn create_favorite(request: CreateFavoriteRequest) -> Result<FavoriteDto, ApiError> {
-        api_post("favorites", &request).await
-    }
-
-    async fn delete_favorite(id: i64) -> Result<bool, ApiError> {
-        let endpoint = format!("favorites/{}", id);
         api_delete_success(&endpoint).await
     }
 }

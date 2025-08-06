@@ -4,6 +4,7 @@ use crate::models::error::ApiError;
 use crate::models::files::FileInfo;
 use crate::repos::files_repo::FilesRepo;
 use crate::repos::online::online_files_repo::OnlineFilesRepo;
+use crate::repos::Repo;
 
 #[command]
 pub async fn get_files(path: String) -> Result<Vec<FileInfo>, ApiError> {
@@ -11,8 +12,8 @@ pub async fn get_files(path: String) -> Result<Vec<FileInfo>, ApiError> {
 }
 
 #[command]
-pub async fn delete_file(path: String) -> Result<(), ApiError> {
-    OnlineFilesRepo::delete_file(&path).await
+pub async fn delete_file(path: String) -> Result<bool, ApiError> {
+    OnlineFilesRepo::delete(path).await
 }
 
 #[command]

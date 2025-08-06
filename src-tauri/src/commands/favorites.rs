@@ -6,10 +6,11 @@ use crate::models::favorite::{
 };
 use crate::repos::favorites_repo::FavoritesRepo;
 use crate::repos::online::online_favorites_repo::OnlineFavoritesRepo;
+use crate::repos::Repo;
 
 #[command]
 pub async fn get_favorites() -> Result<Vec<FavoriteDto>, ApiError> {
-    OnlineFavoritesRepo::get_favorites().await
+    OnlineFavoritesRepo::get_all().await
 }
 
 #[command]
@@ -32,10 +33,10 @@ pub async fn delete_favorite_file(id: i64) -> Result<bool, ApiError> {
 
 #[command]
 pub async fn create_favorite(request: CreateFavoriteRequest) -> Result<FavoriteDto, ApiError> {
-    OnlineFavoritesRepo::create_favorite(request).await
+    OnlineFavoritesRepo::create(request).await
 }
 
 #[command]
 pub async fn delete_favorite(id: i64) -> Result<bool, ApiError> {
-    OnlineFavoritesRepo::delete_favorite(id).await
+    OnlineFavoritesRepo::delete(id).await
 }

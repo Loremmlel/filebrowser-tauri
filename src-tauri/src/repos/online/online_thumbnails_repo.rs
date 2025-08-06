@@ -6,13 +6,18 @@ use crate::{
 
 pub struct OnlineThumbnailsRepo;
 
-impl Repo for OnlineThumbnailsRepo {}
+impl Repo for OnlineThumbnailsRepo {
+    type Id = String;
+    type Item = Vec<u8>;
+    type CreateRequest = ();
+    type UpdateRequest = ();
 
-impl OnlineRepo for OnlineThumbnailsRepo {}
-
-impl ThumbnailsRepo for OnlineThumbnailsRepo {
-    async fn get_thumbnail(path: &str) -> Result<Vec<u8>, ApiError> {
-        let endpoint = format!("thumbnail?path={}", path);
+    async fn get(_id: Self::Id) -> Result<Self::Item, ApiError> {
+        let endpoint = format!("thumbnail?path={}", _id);
         api_get_bytes(&endpoint).await
     }
 }
+
+impl OnlineRepo for OnlineThumbnailsRepo {}
+
+impl ThumbnailsRepo for OnlineThumbnailsRepo {}

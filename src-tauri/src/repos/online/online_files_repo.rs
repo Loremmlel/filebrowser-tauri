@@ -8,7 +8,17 @@ use crate::{
 
 pub struct OnlineFilesRepo;
 
-impl Repo for OnlineFilesRepo {}
+impl Repo for OnlineFilesRepo {
+    type Id = String;
+    type Item = FileInfo;
+    type UpdateRequest = ();
+    type CreateRequest = ();
+
+    async fn delete(_id: Self::Id) -> Result<bool, ApiError> {
+        let endpoint = format!("files?path={}", _id);
+        api_delete(&endpoint).await
+    }
+}
 
 impl OnlineRepo for OnlineFilesRepo {}
 
@@ -17,12 +27,6 @@ impl FilesRepo for OnlineFilesRepo {
         let endpoint = format!("files?path={}", path);
         api_get(&endpoint).await
     }
-
-    async fn delete_file(path: &str) -> Result<(), ApiError> {
-        let endpoint = format!("files?path={}", path);
-        api_delete(&endpoint).await
-    }
-
     async fn download_file(path: &str, filename: &str) -> Result<(), ApiError> {
         let endpoint = format!("files/download?path={}", path);
         let bytes = api_get_bytes(&endpoint).await?;
