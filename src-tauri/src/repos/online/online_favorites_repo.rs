@@ -32,7 +32,6 @@ impl Repo for OnlineFavoritesRepo {
 impl OnlineRepo for OnlineFavoritesRepo {}
 
 impl FavoritesRepo for OnlineFavoritesRepo {
-
     async fn add_file_to_favorite(
         request: AddFileToFavoriteRequest,
         favorite_id: i64,

@@ -1,9 +1,10 @@
 use std::fs;
 
+use crate::services::api_service::api_delete_success;
 use crate::{
     models::{error::ApiError, files::FileInfo},
     repos::{files_repo::FilesRepo, online::OnlineRepo, Repo},
-    services::api_service::{api_delete, api_get, api_get_bytes},
+    services::api_service::{api_get, api_get_bytes},
 };
 
 pub struct OnlineFilesRepo;
@@ -16,7 +17,7 @@ impl Repo for OnlineFilesRepo {
 
     async fn delete(_id: Self::Id) -> Result<bool, ApiError> {
         let endpoint = format!("files?path={}", _id);
-        api_delete(&endpoint).await
+        api_delete_success(&endpoint).await
     }
 }
 

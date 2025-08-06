@@ -1,7 +1,7 @@
 use crate::{
     models::{
         error::ApiError,
-        favorite::{AddFileToFavoriteRequest, CreateFavoriteRequest, FavoriteDto, FavoriteFileDto},
+        favorite::{AddFileToFavoriteRequest, FavoriteFileDto},
     },
     repos::Repo,
 };

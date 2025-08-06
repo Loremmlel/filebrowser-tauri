@@ -43,12 +43,12 @@ impl ApiError {
             error_type: ErrorType::Network,
         }
     }
-    
+
     pub fn not_implemented(fn_name: &str) -> Self {
         Self {
             status_code: 599,
             message: format!("函数没有实现: {}", fn_name),
-            error_type: ErrorType::NotImplemented
+            error_type: ErrorType::NotImplemented,
         }
     }
 }

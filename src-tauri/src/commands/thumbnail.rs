@@ -7,7 +7,6 @@ use tokio::sync::{RwLock, Semaphore};
 use crate::models::error::ApiError;
 use crate::repos::online::online_thumbnails_repo::OnlineThumbnailsRepo;
 use crate::repos::Repo;
-use crate::repos::thumbnails_repo::ThumbnailsRepo;
 use crate::utils::lru_cache::LruCache;
 
 // 全局信号量，限制最多5个并发缩略图请求
@@ -49,14 +48,12 @@ async fn emit_thumbnail_status_update(app: &AppHandle) {
     }
 }
 
-// 内部获取状态的函数，避免重复代码
 async fn get_thumbnail_status_internal() -> Result<ThumbnailStatus, ApiError> {
     let semaphore = get_thumbnail_semaphore();
     let waiting = WAITING_COUNT.load(Ordering::Relaxed);
     let processing = PROCESSING_COUNT.load(Ordering::Relaxed);
     let available = semaphore.available_permits();
 
-    // 获取缓存信息
     let cache = get_thumbnail_cache().read().await;
     let cache_size = cache.len();
     let cache_max_size = cache.max_size();
