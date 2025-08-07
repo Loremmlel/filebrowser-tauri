@@ -1,0 +1,3 @@
+interface YuzuVideoPlayerProps {
+  supportHevc: boolean
+}

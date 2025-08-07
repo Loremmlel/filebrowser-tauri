@@ -22,7 +22,8 @@ export const YuzuTranscodeStatusBar: React.FC<YuzuTranscodeStatusBarProps> = ({
   if (error || status?.error) {
     return (
       <div
-        className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-red-100 border border-red-300 rounded-lg px-4 py-3 shadow-lg max-w-md ${className}`}
+        className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 
+        bg-red-100 border border-red-300 rounded-lg px-4 py-3 shadow-lg max-w-md ${className}`}
       >
         <div className='flex items-center space-x-3'>
           <ExclamationTriangleIcon className='w-5 h-5 text-red-500 flex-shrink-0' />
@@ -48,7 +49,9 @@ export const YuzuTranscodeStatusBar: React.FC<YuzuTranscodeStatusBarProps> = ({
 
     return (
       <div
-        className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-white border border-gray-200 rounded-lg px-4 py-3 shadow-lg backdrop-blur-sm bg-opacity-95 min-w-80 ${className}`}
+        className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-white border 
+        border-gray-200 rounded-lg px-4 py-3 shadow-lg 
+        backdrop-blur-sm bg-opacity-95 min-w-80 ${className}`}
       >
         <div className='flex items-center space-x-3'>
           <div className='flex-1'>
