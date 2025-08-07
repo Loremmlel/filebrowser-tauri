@@ -90,43 +90,34 @@ export const useVideoStatus = (videoRef: MutableRefObject<HTMLVideoElement | nul
         video.removeEventListener(event, handleEvent)
       })
     }
-  }, [videoRef])
+  }, [])
 
   const controls = {
-    play: useCallback(() => videoRef.current?.play(), [videoRef]),
-    pause: useCallback(() => videoRef.current?.pause(), [videoRef]),
-    togglePlay: useCallback(() => {
+    play: () => videoRef.current?.play(),
+    pause: () => videoRef.current?.pause(),
+    togglePlay: () => {
       if (isPlaying) {
         videoRef.current?.pause()
       } else {
         videoRef.current?.play()
       }
-    }, [isPlaying, videoRef]),
-    seek: useCallback(
-      (time: number) => {
-        if (videoRef.current) {
-          videoRef.current.currentTime = time
-        }
-      },
-      [videoRef]
-    ),
-    setVolume: useCallback(
-      (volume: number) => {
-        if (videoRef.current) {
-          videoRef.current.volume = volume
-        }
-      },
-      [videoRef]
-    ),
-    setPlaybackRate: useCallback(
-      (rate: number) => {
-        if (videoRef.current) {
-          videoRef.current.playbackRate = rate
-        }
-      },
-      [videoRef]
-    ),
-    toggleFullscreen: useCallback(async () => {
+    },
+    seek: (time: number) => {
+      if (videoRef.current) {
+        videoRef.current.currentTime = time
+      }
+    },
+    setVolume: (volume: number) => {
+      if (videoRef.current) {
+        videoRef.current.volume = volume
+      }
+    },
+    setPlaybackRate: (rate: number) => {
+      if (videoRef.current) {
+        videoRef.current.playbackRate = rate
+      }
+    },
+    toggleFullscreen: async () => {
       if (!videoRef.current) {
         return
       }
@@ -140,7 +131,7 @@ export const useVideoStatus = (videoRef: MutableRefObject<HTMLVideoElement | nul
       } catch (error) {
         setError(error instanceof Error ? error.message : '切换全屏错误')
       }
-    }, [isFullscreen, videoRef]),
+    },
   }
 
   return {

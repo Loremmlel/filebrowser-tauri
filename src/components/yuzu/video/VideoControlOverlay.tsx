@@ -254,7 +254,7 @@ export const YuzuVideoControlOverlay = forwardRef<HTMLDivElement, VideoControlOv
                 <input
                   type='range'
                   min='0'
-                  max={duration ?? 0}
+                  max={duration || 0}
                   value={currentTime}
                   onChange={e => onSeek(Number(e.target.value))}
                   className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
