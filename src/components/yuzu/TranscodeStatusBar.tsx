@@ -1,5 +1,5 @@
 import React from 'react'
-import { useTranscodeStatus } from '@/hooks/transcode/useTranscodeStatus.ts'
+import { useTranscodeStatus } from '@/hooks/video/useTranscodeStatus.ts'
 import { ExclamationTriangleIcon, XMarkIcon } from '@heroicons/react/24/solid'
 
 interface YuzuTranscodeStatusBarProps {
