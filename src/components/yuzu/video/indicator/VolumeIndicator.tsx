@@ -32,4 +32,3 @@ export const YuzuVolumeIndicator: React.FC<YuzuVolumeIndicatorProps> = ({ isMute
     </div>
   )
 }
-

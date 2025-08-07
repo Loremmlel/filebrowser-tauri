@@ -296,4 +296,3 @@ export const useVideoControls = (
     handleKeyUp,
   }
 }
-

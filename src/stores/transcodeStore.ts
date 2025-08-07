@@ -24,4 +24,3 @@ export const useTranscodeStore = create<TranscodeStore>(set => ({
   setError: error => set({ error }),
   setIsLoading: isLoading => set({ isLoading }),
 }))
-

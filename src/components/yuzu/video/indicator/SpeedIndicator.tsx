@@ -15,4 +15,3 @@ export const YuzuSpeedIndicator: React.FC = () => {
     </div>
   )
 }
-

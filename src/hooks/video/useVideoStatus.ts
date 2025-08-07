@@ -1,4 +1,4 @@
-import { MutableRefObject, useCallback, useEffect, useState } from 'react'
+import { MutableRefObject, useEffect, useState } from 'react'
 
 export const useVideoStatus = (videoRef: MutableRefObject<HTMLVideoElement | null>) => {
   const [isPlaying, setIsPlaying] = useState(false)
