@@ -2,11 +2,13 @@ import { AddToFavoritesModal } from '@/components/browse/AddToFavoritesModal'
 import { BreadCrumb } from '@/components/browse/BreadCrumb'
 import { FileItem } from '@/components/browse/FileItem'
 import { YuzuImageViewer } from '@/components/yuzu/ImageViewer'
+import { YuzuVideoPlayer } from '@/components/yuzu/video/VideoPlayer'
 import { useBrowseData } from '@/hooks/browse/useBrowseData'
 import { useFavoriteOperations } from '@/hooks/browse/useFavoriteOperations'
 import { useFileOperations } from '@/hooks/browse/useFileOperations'
 import { useImagePreview } from '@/hooks/browse/useImagePreview'
 import { useBrowseStore } from '@/stores/browseStore'
+import { useConfigStore } from '@/stores/configStore'
 import { FileInfo, FileType } from '@/types/files'
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
@@ -24,6 +26,8 @@ export const BrowsePage: React.FC = () => {
   const { favorites, isFileFavorite, handleFavoriteToggle, handleAddToFavorites } =
     useFavoriteOperations()
   const { previewItem, handleImageNavigation, handleClosePreview } = useImagePreview()
+
+  const { supportHevc } = useConfigStore()
 
   // 处理URL参数
   useEffect(() => {
@@ -135,7 +139,14 @@ export const BrowsePage: React.FC = () => {
         />
       )}
 
-      {}
+      {/* 视频播放器 */}
+      {previewItem != null && previewItem.type === FileType.Video && (
+        <YuzuVideoPlayer
+          supportHevc={supportHevc ?? false}
+          path={previewItem.path}
+          onClose={handleClosePreview}
+        />
+      )}
     </div>
   )
 }
