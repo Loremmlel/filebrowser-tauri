@@ -90,7 +90,7 @@ export const useVideoStatus = (videoRef: MutableRefObject<HTMLVideoElement | nul
         video.removeEventListener(event, handleEvent)
       })
     }
-  }, [])
+  }, [videoRef])
 
   const controls = {
     play: () => videoRef.current?.play(),

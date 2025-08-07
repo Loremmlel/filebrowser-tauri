@@ -16,7 +16,6 @@ export const useAppInitialization = () => {
         if (platform === 'android') {
           const androidServerUrl = 'http://10.0.2.2:8080'
           setServerUrl(androidServerUrl)
-        } else {
         }
       } catch (error) {
         console.error('获取平台信息失败:', error)

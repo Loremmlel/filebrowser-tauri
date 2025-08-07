@@ -126,7 +126,7 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
       stopTranscode()
       clearTranscodeStatus()
     }
-  }, [])
+  }, [clearTranscodeStatus, stopTranscode])
 
   // 监听全屏状态变化
   useEffect(() => {
@@ -182,7 +182,8 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
           <p className='text-gray-300 mb-6'>{error}</p>
           <button
             onClick={onClose}
-            className='px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'
+            className='px-6 py-2 bg-blue-600 text-white 
+            rounded-lg hover:bg-blue-700 transition-colors'
           >
             关闭
           </button>
