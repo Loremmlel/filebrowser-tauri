@@ -2,6 +2,7 @@ import { AddToFavoritesModal } from '@/components/browse/AddToFavoritesModal'
 import { BreadCrumb } from '@/components/browse/BreadCrumb'
 import { FileItem } from '@/components/browse/FileItem'
 import { YuzuImageViewer } from '@/components/yuzu/ImageViewer'
+import { YuzuThumbnailStatusBar } from '@/components/yuzu/ThumbnailStatusBar'
 import { YuzuVideoPlayer } from '@/components/yuzu/video/VideoPlayer'
 import { useBrowseData } from '@/hooks/browse/useBrowseData'
 import { useFavoriteOperations } from '@/hooks/browse/useFavoriteOperations'
@@ -147,6 +148,9 @@ export const BrowsePage: React.FC = () => {
           onClose={handleClosePreview}
         />
       )}
+
+      {/* 缩略图状态栏 */}
+      {previewItem == null && <YuzuThumbnailStatusBar />}
     </div>
   )
 }

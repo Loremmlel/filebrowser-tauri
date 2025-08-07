@@ -1,6 +1,5 @@
 import { YuzuBottomNav } from '@/components/yuzu/BottomNav'
 import { YuzuToastContainer } from '@/components/yuzu/ToastContainer'
-import { YuzuThumbnailStatusBar } from '@/components/yuzu/ThumbnailStatusBar'
 import React from 'react'
 import { YuzuHevcNotification } from '@/components/yuzu/video/HevcNotification.tsx'
 
@@ -14,11 +13,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       <div className='flex flex-col h-screen bg-gray-50'>
         <YuzuHevcNotification />
         {/* 主内容区域 */}
-        <main className='relative flex-1 overflow-hidden'>
-          {children}
-          {/* 缩略图状态栏 */}
-          <YuzuThumbnailStatusBar />
-        </main>
+        <main className='relative flex-1 overflow-hidden'>{children}</main>
 
         {/* 底部导航 */}
         <YuzuBottomNav />
