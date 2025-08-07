@@ -57,38 +57,38 @@ export const useVideoStatus = (videoRef: MutableRefObject<HTMLVideoElement | nul
         default:
           break
       }
+    }
 
-      function init() {
-        setDuration(video!.duration)
-        setPlaybackRate(video!.playbackRate)
-        setVolume(video!.volume)
-        setIsMuted(video!.muted)
-      }
+    function init() {
+      setDuration(video!.duration)
+      setPlaybackRate(video!.playbackRate)
+      setVolume(video!.volume)
+      setIsMuted(video!.muted)
+    }
 
-      const events = [
-        'play',
-        'pause',
-        'waiting',
-        'playing',
-        'timeupdate',
-        'durationchange',
-        'ratechange',
-        'volumechange',
-        'error',
-        'enterpictureinpicture',
-        'leavepictureinpicture',
-        'fullscreenchange',
-      ]
+    const events = [
+      'play',
+      'pause',
+      'waiting',
+      'playing',
+      'timeupdate',
+      'durationchange',
+      'ratechange',
+      'volumechange',
+      'error',
+      'enterpictureinpicture',
+      'leavepictureinpicture',
+      'fullscreenchange',
+    ]
+    events.forEach(event => {
+      video.addEventListener(event, handleEvent)
+    })
+    init()
+
+    return () => {
       events.forEach(event => {
-        video!.addEventListener(event, handleEvent)
+        video.removeEventListener(event, handleEvent)
       })
-      init()
-
-      return () => {
-        events.forEach(event => {
-          video!.removeEventListener(event, handleEvent)
-        })
-      }
     }
   }, [videoRef])
 
