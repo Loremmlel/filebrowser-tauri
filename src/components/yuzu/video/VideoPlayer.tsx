@@ -15,7 +15,7 @@ interface YuzuVideoPlayerProps {
 
 export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportHevc, onClose }) => {
   const { serverUrl } = useConfigStore()
-  const { startTranscode, stopTranscode, clearStatus } = useTranscodeStatus()
+  const { startTranscode, stopTranscode, clearStatus: clearTranscodeStatus } = useTranscodeStatus()
 
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const hlsRef = useRef<Hls | null>(null)
@@ -38,7 +38,7 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
   const setupDirectPlay = useCallback(() => {
     if (!videoRef.current) return
 
-    const directVideoUrl = `${serverUrl}/video/direct-video?path=${encodeURIComponent(path)}`
+    const directVideoUrl = `${serverUrl}/direct-video?path=${encodeURIComponent(path)}`
     videoRef.current.src = directVideoUrl
     setIsLoading(false)
   }, [serverUrl, path])
@@ -116,10 +116,17 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
 
     return () => {
       cleanupHls()
-      stopTranscode()
-      clearStatus()
+      // 清理时不调用stopTranscode和clearStatus，让组件自然卸载
     }
-  }, [supportHevc, setupDirectPlay, setupHlsPlay, cleanupHls, clearStatus])
+  }, [supportHevc, setupDirectPlay, setupHlsPlay, cleanupHls])
+
+  // 组件卸载时清理转码状态
+  useEffect(() => {
+    return () => {
+      stopTranscode()
+      clearTranscodeStatus()
+    }
+  }, [])
 
   // 监听全屏状态变化
   useEffect(() => {
