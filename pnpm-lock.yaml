@@ -18,7 +18,7 @@ importers:
         specifier: ^2
         version: 2.7.0
       '@tauri-apps/plugin-dialog':
-        specifier: ^2.3.2
+        specifier: ^2
         version: 2.3.2
       '@tauri-apps/plugin-opener':
         specifier: ^2
@@ -26,6 +26,9 @@ importers:
       framer-motion:
         specifier: ^12.23.12
         version: 12.23.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      hls.js:
+        specifier: ^1.6.9
+        version: 1.6.9
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -1262,6 +1265,9 @@ packages:
   hasown@2.0.2:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
+
+  hls.js@1.6.9:
+    resolution: {integrity: sha512-q7qPrri6GRwjcNd7EkFCmhiJ6PBIxeUsdxKbquBkQZpg9jAnp6zSAeN9eEWFlOB09J8JfzAQGoXL5ZEAltjO9g==}
 
   ignore@5.3.2:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
@@ -3226,6 +3232,8 @@ snapshots:
   hasown@2.0.2:
     dependencies:
       function-bind: 1.1.2
+
+  hls.js@1.6.9: {}
 
   ignore@5.3.2: {}
 
