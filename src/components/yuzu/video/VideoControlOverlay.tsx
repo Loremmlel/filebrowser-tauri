@@ -1,20 +1,18 @@
 import { forwardRef, useEffect, useRef } from 'react'
 import {
-  ChevronRightIcon,
   PlayIcon,
   PauseIcon,
   XMarkIcon,
   ArrowsPointingOutIcon,
   ArrowsPointingInIcon,
-  SpeakerWaveIcon,
-  SpeakerXMarkIcon,
-  ChevronDoubleLeftIcon,
-  ChevronDoubleRightIcon,
 } from '@heroicons/react/24/outline'
 import { useVideoStatus } from '@/hooks/video/useVideoStatus'
 import { useVideoControls } from '@/hooks/video/useVideoControls'
 import { formatTime } from '@/utils/stringUtil'
 import { YuzuLoading } from '../Loading'
+import { YuzuSpeedIndicator } from './indicator/SpeedIndicator'
+import { YuzuSeekIndicator } from './indicator/SeekIndicator'
+import { YuzuVolumeIndicator } from './indicator/VolumeIndicator'
 
 interface VideoControlOverlayProps {
   videoRef: React.MutableRefObject<HTMLVideoElement | null>
@@ -26,7 +24,7 @@ interface VideoControlOverlayProps {
   onToggleFullscreen: () => void
 }
 
-export const VideoControlOverlay = forwardRef<HTMLDivElement, VideoControlOverlayProps>(
+export const YuzuVideoControlOverlay = forwardRef<HTMLDivElement, VideoControlOverlayProps>(
   (
     { videoRef, title, onClose, onSeek, onVolumeChange, onSpeedChange, onToggleFullscreen },
     _ref
@@ -287,61 +285,19 @@ export const VideoControlOverlay = forwardRef<HTMLDivElement, VideoControlOverla
         </div>
 
         {/* 三倍速指示器 */}
-        {showSpeedIndicator && (
-          <div className='absolute inset-0 flex items-center justify-center z-60 pointer-events-none'>
-            <div className='bg-black/70 rounded-lg p-6 flex flex-col items-center'>
-              <div className='flex space-x-1 mb-2'>
-                <ChevronRightIcon className='w-8 h-8 text-white speed-icon-1' />
-                <ChevronRightIcon className='w-8 h-8 text-white speed-icon-2' />
-                <ChevronRightIcon className='w-8 h-8 text-white speed-icon-3' />
-              </div>
-              <span className='text-white text-xl font-bold'>3×</span>
-            </div>
-          </div>
-        )}
+        {showSpeedIndicator && <YuzuSpeedIndicator />}
 
         {/* 跳转指示器（仅移动端） */}
         {showSeekIndicator && isMobile && (
-          <div className='absolute inset-0 flex items-center justify-center z-60 pointer-events-none'>
-            <div className='bg-black/70 rounded-lg p-6 flex flex-col items-center'>
-              {seekDirection === 'forward' ? (
-                <ChevronDoubleRightIcon className='w-12 h-12 text-white mb-2' />
-              ) : (
-                <ChevronDoubleLeftIcon className='w-12 h-12 text-white mb-2' />
-              )}
-              <span className='text-white text-sm'>
-                {formatTime(seekTime)} / {formatTime(duration)}
-              </span>
-            </div>
-          </div>
+          <YuzuSeekIndicator
+            seekDirection={seekDirection}
+            seekTime={seekTime}
+            duration={duration}
+          />
         )}
 
         {/* 音量指示器 */}
-        {showVolumeIndicator && (
-          <div className='absolute top-20 right-8 z-60 pointer-events-none'>
-            <div className='bg-black/70 rounded-lg p-4 flex flex-col items-center min-w-[60px]'>
-              {/* 音量图标 */}
-              <div className='mb-3'>
-                {isMuted || volume === 0 ? (
-                  <SpeakerXMarkIcon className='w-6 h-6 text-white' />
-                ) : (
-                  <SpeakerWaveIcon className='w-6 h-6 text-white' />
-                )}
-              </div>
-
-              {/* 竖直进度条 */}
-              <div className='relative w-2 h-24 bg-white/30 rounded-full overflow-hidden'>
-                <div
-                  className='absolute bottom-0 w-full bg-white transition-all duration-100 rounded-full'
-                  style={{ height: `${volume * 100}%` }}
-                />
-              </div>
-
-              {/* 音量百分比 */}
-              <span className='text-white text-xs mt-2'>{Math.round(volume * 100)}%</span>
-            </div>
-          </div>
-        )}
+        {showVolumeIndicator && <YuzuVolumeIndicator isMuted={isMuted} volume={volume} />}
       </>
     )
   }
