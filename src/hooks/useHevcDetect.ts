@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { invoke } from '@tauri-apps/api/core'
+import { useConfigStore } from '@/stores/configStore'
 
 interface HevcSupport {
   isSupported: boolean
@@ -11,6 +12,7 @@ interface HevcSupport {
 type platform = 'windows' | 'macos' | 'linux' | 'android' | 'ios'
 
 export const useHevcDetect = () => {
+  const { setSupportHevc } = useConfigStore()
   const [support, setSupport] = useState<HevcSupport | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -69,6 +71,7 @@ export const useHevcDetect = () => {
 
     try {
       const result = await detectHevcSupport()
+      setSupportHevc(result.isSupported)
       setSupport(result)
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'HEVC 支持检测失败'

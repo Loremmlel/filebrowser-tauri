@@ -5,6 +5,7 @@ interface ConfigState {
   online: boolean
   serverUrl: string
   baseDir: string
+  supportHevc?: boolean
 }
 
 interface ConfigStore extends ConfigState {
@@ -13,6 +14,8 @@ interface ConfigStore extends ConfigState {
   setBaseDir(baseDir: string): void
 
   setOnline(online: boolean): void
+
+  setSupportHevc(supportHevc: boolean): void
 }
 
 export const useConfigStore = create<ConfigStore>()(
@@ -21,6 +24,7 @@ export const useConfigStore = create<ConfigStore>()(
       serverUrl: 'http://localhost:8080',
       baseDir: 'E:/ZTEMP/kukuku',
       online: true,
+      supportHevc: undefined,
 
       setServerUrl: serverUrl => {
         set({ serverUrl })
@@ -30,6 +34,9 @@ export const useConfigStore = create<ConfigStore>()(
       },
       setOnline(online: boolean) {
         set({ online })
+      },
+      setSupportHevc(supportHevc: boolean) {
+        set({ supportHevc })
       },
     }),
     { name: 'config' }

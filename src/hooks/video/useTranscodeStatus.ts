@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect } from 'react'
 import { TranscodeStatus } from '@/types/transcode.ts'
 import { listen, UnlistenFn } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/core'
+import { useTranscodeStore } from '@/stores/transcodeStore'
 
 export const useTranscodeStatus = () => {
-  const [status, setStatus] = useState<TranscodeStatus | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const { status, isLoading, error, setIsLoading, setStatus, clearStatus, setError } =
+    useTranscodeStore()
 
   useEffect(() => {
     let unlisten: UnlistenFn | null = null
@@ -58,11 +58,6 @@ export const useTranscodeStatus = () => {
       setIsLoading(false)
     }
   }, [status?.id])
-
-  const clearStatus = useCallback(() => {
-    setStatus(null)
-    setError(null)
-  }, [])
 
   return {
     status,
