@@ -5,7 +5,6 @@ interface TouchData {
   startY: number
   startTime: number
   isLongPress: boolean
-  longPressTimer: ReturnType<typeof setTimeout> | null
 }
 
 export const useVideoControls = (
@@ -23,12 +22,12 @@ export const useVideoControls = (
   const [seekTime, setSeekTime] = useState(0)
   const [isMobile, setIsMobile] = useState(false)
   const hideTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null)
   const [touchData, setTouchData] = useState<TouchData>({
     startX: 0,
     startY: 0,
     startTime: 0,
     isLongPress: false,
-    longPressTimer: null,
   })
   const [isSpeedMode, setIsSpeedMode] = useState(false)
   const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set())
@@ -96,8 +95,8 @@ export const useVideoControls = (
     const startTime = Date.now()
 
     // 清除之前的长按计时器
-    if (touchData.longPressTimer) {
-      clearTimeout(touchData.longPressTimer)
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current)
     }
 
     // 设置长按计时器
@@ -105,15 +104,16 @@ export const useVideoControls = (
       setTouchData(prev => ({ ...prev, isLongPress: true }))
       setIsSpeedMode(true)
       onSpeedChange(3)
-      setShowSeekIndicator(true)
+      setShowSpeedIndicator(true)
     }, 500)
+
+    longPressTimerRef.current = longPressTimer
 
     setTouchData({
       startX: touch.clientX,
       startY: touch.clientY,
       startTime,
       isLongPress: false,
-      longPressTimer,
     })
   }
 
@@ -130,9 +130,9 @@ export const useVideoControls = (
     if (touchData.isLongPress) return
 
     // 清除长按计时器（因为用户在移动）
-    if (touchData.longPressTimer) {
-      clearTimeout(touchData.longPressTimer)
-      setTouchData(prev => ({ ...prev, longPressTimer: null }))
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current)
+      longPressTimerRef.current = null
     }
 
     // 水平滑动处理快进/后退
@@ -159,8 +159,9 @@ export const useVideoControls = (
 
   const handleTouchEnd = () => {
     // 清除长按计时器
-    if (touchData.longPressTimer) {
-      clearTimeout(touchData.longPressTimer)
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current)
+      longPressTimerRef.current = null
     }
 
     // 如果是长按模式，恢复正常速度
@@ -187,7 +188,6 @@ export const useVideoControls = (
       startY: 0,
       startTime: 0,
       isLongPress: false,
-      longPressTimer: null,
     })
   }
 
@@ -208,7 +208,7 @@ export const useVideoControls = (
       }, 500)
 
       // 存储计时器引用
-      setTouchData(prev => ({ ...prev, longPressTimer: timer }))
+      longPressTimerRef.current = timer
     }
   }
 
@@ -220,9 +220,9 @@ export const useVideoControls = (
     setPressedKeys(newKeys)
 
     // 清除长按计时器
-    if (touchData.longPressTimer) {
-      clearTimeout(touchData.longPressTimer)
-      setTouchData(prev => ({ ...prev, longPressTimer: null }))
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current)
+      longPressTimerRef.current = null
     }
 
     switch (e.key) {
@@ -272,11 +272,11 @@ export const useVideoControls = (
       if (hideTimerRef.current) {
         clearTimeout(hideTimerRef.current)
       }
-      if (touchData.longPressTimer) {
-        clearTimeout(touchData.longPressTimer)
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current)
       }
     }
-  }, [touchData.longPressTimer])
+  }, [])
 
   return {
     isVisible,
