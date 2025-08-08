@@ -80,20 +80,19 @@ export const YuzuVideoControlOverlay = forwardRef<HTMLDivElement, VideoControlOv
       // 移动端事件监听
       if (isMobile) {
         const videoContainer = overlayRef.current?.parentElement
-        if (videoContainer) {
-          const handleTouchStartWrapper = (e: Event) => handleTouchStart(e as TouchEvent)
-          const handleTouchMoveWrapper = (e: Event) => handleTouchMove(e as TouchEvent)
-          const handleTouchEndWrapper = () => handleTouchEnd()
+        if (!videoContainer) return
+        const handleTouchStartWrapper = (e: Event) => handleTouchStart(e as TouchEvent)
+        const handleTouchMoveWrapper = (e: Event) => handleTouchMove(e as TouchEvent)
+        const handleTouchEndWrapper = () => handleTouchEnd()
 
-          videoContainer.addEventListener('touchstart', handleTouchStartWrapper)
-          videoContainer.addEventListener('touchmove', handleTouchMoveWrapper)
-          videoContainer.addEventListener('touchend', handleTouchEndWrapper)
+        videoContainer.addEventListener('touchstart', handleTouchStartWrapper)
+        videoContainer.addEventListener('touchmove', handleTouchMoveWrapper)
+        videoContainer.addEventListener('touchend', handleTouchEndWrapper)
 
-          return () => {
-            videoContainer.removeEventListener('touchstart', handleTouchStartWrapper)
-            videoContainer.removeEventListener('touchmove', handleTouchMoveWrapper)
-            videoContainer.removeEventListener('touchend', handleTouchEndWrapper)
-          }
+        return () => {
+          videoContainer.removeEventListener('touchstart', handleTouchStartWrapper)
+          videoContainer.removeEventListener('touchmove', handleTouchMoveWrapper)
+          videoContainer.removeEventListener('touchend', handleTouchEndWrapper)
         }
       }
 

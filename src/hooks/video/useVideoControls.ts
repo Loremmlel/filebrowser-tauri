@@ -23,6 +23,7 @@ export const useVideoControls = (
   const [isMobile, setIsMobile] = useState(false)
   const hideTimerRef = useRef<NodeJS.Timeout | null>(null)
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const hideVolumeTimerRef = useRef<NodeJS.Timeout | null>(null)
   const [touchData, setTouchData] = useState<TouchData>({
     startX: 0,
     startY: 0,
@@ -53,14 +54,27 @@ export const useVideoControls = (
     hideTimerRef.current = timer
   }, [])
 
+  function resetHideVolumeTimer(createNew = false) {
+    if (hideVolumeTimerRef.current) {
+      clearTimeout(hideVolumeTimerRef.current)
+      hideVolumeTimerRef.current = null
+    }
+    if (createNew) {
+      const timer = setTimeout(() => {
+        setShowVolumeIndicator(false)
+      }, 1000)
+      hideVolumeTimerRef.current = timer
+    }
+  }
+
   // 显示控制层
-  const show = () => {
+  function show() {
     setIsVisible(true)
     resetHideTimer()
   }
 
   // 隐藏控制层
-  const hide = () => {
+  function hide() {
     setIsVisible(false)
     if (hideTimerRef.current) {
       clearTimeout(hideTimerRef.current)
@@ -69,7 +83,7 @@ export const useVideoControls = (
   }
 
   // 切换控制层显示
-  const toggle = () => {
+  function toggle() {
     if (isVisible) {
       hide()
     } else {
@@ -78,25 +92,27 @@ export const useVideoControls = (
   }
 
   // 跳转指示器控制
-  const showSeekIndicatorAction = (direction: 'forward' | 'backward', time: number) => {
+  function showSeekIndicatorAction(direction: 'forward' | 'backward', time: number) {
     setSeekDirection(direction)
     setSeekTime(time)
     setShowSeekIndicator(true)
   }
-  const hideSeekIndicatorAction = () => {
+
+  function hideSeekIndicatorAction() {
     setShowSeekIndicator(false)
     setSeekDirection(null)
     setSeekTime(0)
   }
 
   // 触摸事件处理
-  const handleTouchStart = (e: TouchEvent) => {
+  function handleTouchStart(e: TouchEvent) {
     const touch = e.touches[0]
     const startTime = Date.now()
 
     // 清除之前的长按计时器
     if (longPressTimerRef.current) {
       clearTimeout(longPressTimerRef.current)
+      longPressTimerRef.current = null
     }
 
     // 设置长按计时器
@@ -117,7 +133,7 @@ export const useVideoControls = (
     })
   }
 
-  const handleTouchMove = (e: TouchEvent) => {
+  function handleTouchMove(e: TouchEvent) {
     if (!videoRef.current) return
 
     const touch = e.touches[0]
@@ -145,6 +161,7 @@ export const useVideoControls = (
 
       showSeekIndicatorAction(direction, newTime)
     }
+
     // 垂直滑动处理音量
     else if (absY > absX && absY > 30) {
       const screenHeight = window.innerHeight
@@ -157,7 +174,7 @@ export const useVideoControls = (
     }
   }
 
-  const handleTouchEnd = () => {
+  function handleTouchEnd() {
     // 清除长按计时器
     if (longPressTimerRef.current) {
       clearTimeout(longPressTimerRef.current)
@@ -179,7 +196,7 @@ export const useVideoControls = (
 
     // 隐藏音量指示器
     if (showVolumeIndicator) {
-      setTimeout(() => setShowVolumeIndicator(false), 1000)
+      resetHideVolumeTimer(true)
     }
 
     // 重置触摸数据
@@ -192,7 +209,7 @@ export const useVideoControls = (
   }
 
   // 键盘事件处理
-  const handleKeyDown = (e: KeyboardEvent) => {
+  function handleKeyDown(e: KeyboardEvent) {
     if (!videoRef.current) return
 
     const newKeys = new Set(pressedKeys)
@@ -212,7 +229,7 @@ export const useVideoControls = (
     }
   }
 
-  const handleKeyUp = (e: KeyboardEvent) => {
+  function handleKeyUp(e: KeyboardEvent) {
     if (!videoRef.current) return
 
     const newKeys = new Set(pressedKeys)
@@ -245,13 +262,13 @@ export const useVideoControls = (
         // 音量增加5%
         onVolumeChange(Math.min(1, videoRef.current.volume + 0.05))
         setShowVolumeIndicator(true)
-        setTimeout(() => setShowVolumeIndicator(false), 1000)
+        resetHideVolumeTimer(true)
         break
       case 'ArrowDown':
         // 音量减少5%
         onVolumeChange(Math.max(0, videoRef.current.volume - 0.05))
         setShowVolumeIndicator(true)
-        setTimeout(() => setShowVolumeIndicator(false), 1000)
+        resetHideVolumeTimer(true)
         break
       case 'Escape':
         onClose()

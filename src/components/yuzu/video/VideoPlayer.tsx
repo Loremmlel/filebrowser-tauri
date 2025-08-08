@@ -62,8 +62,8 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
           cleanupHls()
 
           const hls = new Hls({
-            enableWorker: true,
-            lowLatencyMode: false,
+            maxBufferLength: 600,
+            autoStartLoad: true,
           })
 
           hlsRef.current = hls
