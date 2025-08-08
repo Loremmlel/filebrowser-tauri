@@ -10,7 +10,7 @@ import { YuzuModal } from './components/yuzu/Modal'
 
 function App() {
   // 初始化应用，根据平台设置服务器地址
-  const { showInitModal, configure } = useAppInitialization()
+  const { showInitModal, udpBroadcastIp, configure } = useAppInitialization()
 
   const [serverUrl, setServerUrl] = useState('http://localhost:8080')
   const [baseDir, setBaseDir] = useState('/')
@@ -73,6 +73,45 @@ function App() {
               className='w-full p-2 border border-gray-300 rounded-md 
               focus:ring-blue-500 focus:border-blue-500'
             />
+
+            {/* 服务器发现状态 */}
+            <div className='mt-3 p-3 bg-gray-50 rounded-md border'>
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center space-x-2'>
+                  <span className='text-sm font-medium text-gray-700'>服务器发现：</span>
+                  {!udpBroadcastIp ? (
+                    <div className='flex items-center space-x-2'>
+                      <div className='flex space-x-1'>
+                        <div className='w-2 h-2 bg-red-500 rounded-full animate-pulse'></div>
+                        <div
+                          className='w-2 h-2 bg-yellow-500 rounded-full animate-pulse'
+                          style={{ animationDelay: '0.3s' }}
+                        ></div>
+                        <div
+                          className='w-2 h-2 bg-green-500 rounded-full animate-pulse'
+                          style={{ animationDelay: '0.6s' }}
+                        ></div>
+                      </div>
+                      <span className='text-sm text-gray-500'>搜索中...</span>
+                    </div>
+                  ) : (
+                    <div className='flex items-center space-x-2'>
+                      <div className='w-2 h-2 bg-green-500 rounded-full'></div>
+                      <span className='text-sm text-green-600'>已发现: {udpBroadcastIp}</span>
+                    </div>
+                  )}
+                </div>
+                {udpBroadcastIp && (
+                  <button
+                    onClick={() => setServerUrl(`http://${udpBroadcastIp}:8080`)}
+                    className='px-3 py-1 text-xs bg-blue-600 text-white rounded-md 
+                    hover:bg-blue-700 transition-colors'
+                  >
+                    应用
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         )}
         {!online && (
