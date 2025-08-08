@@ -16,11 +16,11 @@ impl Repo for OnlineFavoritesRepo {
     type UpdateRequest = ();
 
     async fn create(_data: Self::CreateRequest) -> Result<Self::Item, ApiError> {
-        api_post("favorites", &Self::get_server_url(), &_data).await
+        api_post(&Self::get_server_url(), "favorites", &_data).await
     }
 
     async fn get_all() -> Result<Vec<Self::Item>, ApiError> {
-        api_get("favorites", &Self::get_server_url()).await
+        api_get(&Self::get_server_url(), "favorites").await
     }
 
     async fn delete(_id: i64) -> Result<bool, ApiError> {
@@ -41,7 +41,7 @@ impl FavoritesRepo for OnlineFavoritesRepo {
     }
 
     async fn get_all_favorite_files() -> Result<Vec<FavoriteFileDto>, ApiError> {
-        api_get("favorites/files", &Self::get_server_url()).await
+        api_get(&Self::get_server_url(), "favorites/files").await
     }
 
     async fn delete_favorite_file(id: i64) -> Result<bool, ApiError> {
