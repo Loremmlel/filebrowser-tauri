@@ -140,25 +140,6 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
     }
   }, [])
 
-  // 视频控制处理函数
-  const handleSeek = useCallback((time: number) => {
-    if (videoRef.current) {
-      videoRef.current.currentTime = time
-    }
-  }, [])
-
-  const handleVolumeChange = useCallback((volume: number) => {
-    if (videoRef.current) {
-      videoRef.current.volume = volume
-    }
-  }, [])
-
-  const handleSpeedChange = useCallback((speed: number) => {
-    if (videoRef.current) {
-      videoRef.current.playbackRate = speed
-    }
-  }, [])
-
   const handleToggleFullscreen = useCallback(async () => {
     if (!containerRef.current) return
 
@@ -222,9 +203,6 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
           videoRef={videoRef}
           title={title}
           onClose={onClose}
-          onSeek={handleSeek}
-          onVolumeChange={handleVolumeChange}
-          onSpeedChange={handleSpeedChange}
           onToggleFullscreen={handleToggleFullscreen}
         />
       </div>

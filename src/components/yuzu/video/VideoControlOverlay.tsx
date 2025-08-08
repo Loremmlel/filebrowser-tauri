@@ -18,17 +18,11 @@ interface VideoControlOverlayProps {
   videoRef: React.MutableRefObject<HTMLVideoElement | null>
   title: string
   onClose: () => void
-  onSeek: (time: number) => void
-  onVolumeChange: (volume: number) => void
-  onSpeedChange: (speed: number) => void
   onToggleFullscreen: () => void
 }
 
 export const YuzuVideoControlOverlay = forwardRef<HTMLDivElement, VideoControlOverlayProps>(
-  (
-    { videoRef, title, onClose, onSeek, onVolumeChange, onSpeedChange, onToggleFullscreen },
-    _ref
-  ) => {
+  ({ videoRef, title, onClose, onToggleFullscreen }, _ref) => {
     const overlayRef = useRef<HTMLDivElement>(null)
     const titleRef = useRef<HTMLDivElement>(null)
 
@@ -44,6 +38,8 @@ export const YuzuVideoControlOverlay = forwardRef<HTMLDivElement, VideoControlOv
       isMuted,
       togglePlay,
       setPlaybackRate,
+      seek,
+      setVolume,
     } = useVideoStatus(videoRef)
 
     const {
@@ -61,7 +57,7 @@ export const YuzuVideoControlOverlay = forwardRef<HTMLDivElement, VideoControlOv
       handleTouchEnd,
       handleKeyDown,
       handleKeyUp,
-    } = useVideoControls(videoRef, onSeek, onVolumeChange, onSpeedChange, onClose)
+    } = useVideoControls(videoRef, seek, setVolume, setPlaybackRate, onClose)
 
     // 标题自动滚动
     useEffect(() => {
@@ -248,7 +244,7 @@ export const YuzuVideoControlOverlay = forwardRef<HTMLDivElement, VideoControlOv
                   min='0'
                   max={duration || 0}
                   value={currentTime}
-                  onChange={e => onSeek(Number(e.target.value))}
+                  onChange={e => seek(Number(e.target.value))}
                   className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
                 />
               </div>
@@ -260,7 +256,6 @@ export const YuzuVideoControlOverlay = forwardRef<HTMLDivElement, VideoControlOv
                     key={speed}
                     onClick={() => {
                       setPlaybackRate(speed)
-                      onSpeedChange(speed)
                     }}
                     className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
                       playbackRate === speed
