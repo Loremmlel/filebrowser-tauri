@@ -5,7 +5,7 @@ import { toast } from '@/utils/toast'
 import { listen, UnlistenFn } from '@tauri-apps/api/event'
 
 export const useAppInitialization = () => {
-  const [showInitModal, setShowInitModal] = useState(true)
+  const [showInitModal] = useState(true)
   const [udpBroadcastIp, setUdpBroadcastIp] = useState<string | null>(null)
   const { serverUrl, setServerUrl, setBaseDir, setOnline } = useConfigStore()
 
@@ -57,7 +57,7 @@ export const useAppInitialization = () => {
       },
     })
     toast.success('应用配置已保存')
-    setShowInitModal(false)
+    // 注意：不再在这里设置 setShowInitModal(false)，由调用方控制
   }
 
   return {
