@@ -64,6 +64,7 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
           const hls = new Hls({
             maxBufferLength: 600,
             autoStartLoad: true,
+            maxBufferHole: 0.5,
           })
 
           hlsRef.current = hls
@@ -126,7 +127,7 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
       stopTranscode()
       clearTranscodeStatus()
     }
-  }, [clearTranscodeStatus, stopTranscode])
+  }, [stopTranscode, clearTranscodeStatus])
 
   // 监听全屏状态变化
   useEffect(() => {

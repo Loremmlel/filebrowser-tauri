@@ -26,22 +26,25 @@ export const useTranscodeStatus = () => {
     return () => {
       unlisten?.()
     }
-  }, [])
-  const startTranscode = useCallback(async (path: string) => {
-    try {
-      setIsLoading(true)
-      setError(null)
-      const result = await invoke<TranscodeStatus>('start_transcode', { path })
-      setStatus(result)
-      return result
-    } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : '启动转码失败'
-      setError(errorMsg)
-      throw err
-    } finally {
-      setIsLoading(false)
-    }
-  }, [])
+  }, [setError, setStatus])
+  const startTranscode = useCallback(
+    async (path: string) => {
+      try {
+        setIsLoading(true)
+        setError(null)
+        const result = await invoke<TranscodeStatus>('start_transcode', { path })
+        setStatus(result)
+        return result
+      } catch (err) {
+        const errorMsg = err instanceof Error ? err.message : '启动转码失败'
+        setError(errorMsg)
+        throw err
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [setError, setIsLoading, setStatus]
+  )
 
   const stopTranscode = useCallback(async () => {
     if (!status?.id) return
@@ -57,7 +60,7 @@ export const useTranscodeStatus = () => {
     } finally {
       setIsLoading(false)
     }
-  }, [status?.id])
+  }, [setError, setIsLoading, setStatus, status?.id])
 
   return {
     status,
