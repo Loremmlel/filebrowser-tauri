@@ -127,7 +127,8 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
       stopTranscode()
       clearTranscodeStatus()
     }
-  }, [stopTranscode, clearTranscodeStatus])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // 监听全屏状态变化
   useEffect(() => {

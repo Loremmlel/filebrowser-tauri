@@ -46,7 +46,7 @@ export const useTranscodeStatus = () => {
     [setError, setIsLoading, setStatus]
   )
 
-  const stopTranscode = useCallback(async () => {
+  const stopTranscode = async () => {
     if (!status?.id) return
 
     try {
@@ -60,7 +60,7 @@ export const useTranscodeStatus = () => {
     } finally {
       setIsLoading(false)
     }
-  }, [setError, setIsLoading, setStatus, status?.id])
+  }
 
   return {
     status,

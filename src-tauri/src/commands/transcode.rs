@@ -13,9 +13,7 @@ pub async fn start_transcode(path: String, app: AppHandle) -> Result<TranscodeSt
             OnlineTranscodeRepo::start_pooling_status(status.id.clone(), &app).await;
             Ok(status)
         }
-        Err(e) => {
-            Err(e.clone())
-        }
+        Err(e) => Err(e),
     }
 }
 
