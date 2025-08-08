@@ -45,7 +45,7 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
         const hls = new Hls({
           maxBufferLength: 600,
           autoStartLoad: true,
-          maxBufferHole: 0.5,
+          maxBufferHole: 1,
         })
 
         hlsRef.current = hls
