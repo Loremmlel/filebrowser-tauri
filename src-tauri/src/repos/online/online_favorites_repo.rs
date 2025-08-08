@@ -16,16 +16,16 @@ impl Repo for OnlineFavoritesRepo {
     type UpdateRequest = ();
 
     async fn create(_data: Self::CreateRequest) -> Result<Self::Item, ApiError> {
-        api_post("favorites", &_data).await
+        api_post("favorites", &Self::get_server_url(), &_data).await
     }
 
     async fn get_all() -> Result<Vec<Self::Item>, ApiError> {
-        api_get("favorites").await
+        api_get("favorites", &Self::get_server_url()).await
     }
 
     async fn delete(_id: i64) -> Result<bool, ApiError> {
         let endpoint = format!("favorites/{}", _id);
-        api_delete_success(&endpoint).await
+        api_delete_success(&Self::get_server_url(), &endpoint).await
     }
 }
 
@@ -37,15 +37,15 @@ impl FavoritesRepo for OnlineFavoritesRepo {
         favorite_id: i64,
     ) -> Result<bool, ApiError> {
         let endpoint = format!("favorites/{}/files", favorite_id);
-        api_post_success(&endpoint, &request).await
+        api_post_success(&Self::get_server_url(), &endpoint, &request).await
     }
 
     async fn get_all_favorite_files() -> Result<Vec<FavoriteFileDto>, ApiError> {
-        api_get("favorites/files").await
+        api_get("favorites/files", &Self::get_server_url()).await
     }
 
     async fn delete_favorite_file(id: i64) -> Result<bool, ApiError> {
         let endpoint = format!("favorites/files/{}", id);
-        api_delete_success(&endpoint).await
+        api_delete_success(&Self::get_server_url(), &endpoint).await
     }
 }

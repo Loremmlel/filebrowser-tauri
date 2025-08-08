@@ -14,7 +14,7 @@ impl Repo for OnlineThumbnailsRepo {
 
     async fn get(_id: Self::Id) -> Result<Self::Item, ApiError> {
         let endpoint = format!("thumbnail?path={}", _id);
-        api_get_bytes(&endpoint).await
+        api_get_bytes(&Self::get_server_url(), &endpoint).await
     }
 }
 

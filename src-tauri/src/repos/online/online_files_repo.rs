@@ -17,7 +17,7 @@ impl Repo for OnlineFilesRepo {
 
     async fn delete(_id: Self::Id) -> Result<bool, ApiError> {
         let endpoint = format!("files?path={}", _id);
-        api_delete_success(&endpoint).await
+        api_delete_success(&Self::get_server_url(), &endpoint).await
     }
 }
 
@@ -26,11 +26,11 @@ impl OnlineRepo for OnlineFilesRepo {}
 impl FilesRepo for OnlineFilesRepo {
     async fn get_files(path: &str) -> Result<Vec<FileInfo>, ApiError> {
         let endpoint = format!("files?path={}", path);
-        api_get(&endpoint).await
+        api_get(&Self::get_server_url(), &endpoint).await
     }
     async fn download_file(path: &str, filename: &str) -> Result<(), ApiError> {
         let endpoint = format!("files/download?path={}", path);
-        let bytes = api_get_bytes(&endpoint).await?;
+        let bytes = api_get_bytes(&Self::get_server_url(), &endpoint).await?;
 
         let download_dir = dirs::download_dir()
             .ok_or_else(|| ApiError::network("无法获取下载目录".to_string()))?;

@@ -1,5 +1,6 @@
 use crate::models::error::ApiError;
 use crate::models::transcode::TranscodeStatus;
+use crate::repos::online::OnlineRepo;
 use crate::repos::transcode_repo::TranscodeRepo;
 use crate::repos::Repo;
 use crate::services::api_service::{api_delete_success, api_get, api_post};
@@ -23,19 +24,21 @@ impl Repo for OnlineTranscodeRepo {
 
     async fn create(_data: Self::CreateRequest) -> Result<Self::Item, ApiError> {
         let endpoint = format!("transcode?path={}", &_data);
-        api_post(&endpoint, &()).await
+        api_post(&Self::get_server_url(), &endpoint, &()).await
     }
 
     async fn get(_id: Self::Id) -> Result<Self::Item, ApiError> {
         let endpoint = format!("transcoding/{}", &_id);
-        api_get(&endpoint).await
+        api_get(&Self::get_server_url(), &endpoint).await
     }
 
     async fn delete(_id: Self::Id) -> Result<bool, ApiError> {
         let endpoint = format!("transcoding/{}", &_id);
-        api_delete_success(&endpoint).await
+        api_delete_success(&Self::get_server_url(), &endpoint).await
     }
 }
+
+impl OnlineRepo for OnlineTranscodeRepo {}
 
 impl TranscodeRepo for OnlineTranscodeRepo {
     async fn start_pooling_status(id: String, app: &AppHandle) {
