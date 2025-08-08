@@ -79,7 +79,7 @@ export const useHevcDetect = () => {
     } finally {
       setIsLoading(false)
     }
-  }, [detectHevcSupport])
+  }, [detectHevcSupport, setSupportHevc])
 
   useEffect(() => {
     checkSupport()
