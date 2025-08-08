@@ -14,13 +14,21 @@ export const toast = {
   },
 
   // 警告提示
-  warning: (message: string, duration?: number) => {
-    useToastStore.getState().showToast(message, ToastType.Warning, duration)
+  warning: (message: string, error?: unknown, duration?: number) => {
+    let errorMessage = message
+    if (error) {
+      errorMessage = `: ${error instanceof Error ? error.message : String(error)}`
+    }
+    useToastStore.getState().showToast(errorMessage, ToastType.Warning, duration)
   },
 
   // 错误提示
-  error: (message: string, duration?: number) => {
-    useToastStore.getState().showToast(message, ToastType.Error, duration)
+  error: (message: string, error?: unknown, duration?: number) => {
+    let errorMessage = message
+    if (error) {
+      errorMessage = `: ${error instanceof Error ? error.message : String(error)}`
+    }
+    useToastStore.getState().showToast(errorMessage, ToastType.Error, duration)
   },
 
   // 处理 API 错误的便捷方法
@@ -30,14 +38,14 @@ export const toast = {
 
     switch (apiError.error_type) {
       case ErrorType.Warning:
-        toast.warning(message, TOAST_DURATION.LONG)
+        toast.warning(message, undefined, TOAST_DURATION.LONG)
         break
       case ErrorType.Error:
-        toast.error(message, TOAST_DURATION.LONG)
+        toast.error(message, undefined, TOAST_DURATION.LONG)
         break
       case ErrorType.Network:
       default:
-        toast.error(message, TOAST_DURATION.LONG)
+        toast.error(message, undefined, TOAST_DURATION.LONG)
         break
     }
 
