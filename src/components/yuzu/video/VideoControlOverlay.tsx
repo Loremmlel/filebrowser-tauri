@@ -256,7 +256,7 @@ export const YuzuVideoControlOverlay = forwardRef<HTMLDivElement, VideoControlOv
                     onClick={() => {
                       setPlaybackRate(speed)
                     }}
-                    className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                    className={`px-1 py-1 rounded text-xs font-medium transition-colors ${
                       playbackRate === speed
                         ? 'bg-white text-black'
                         : 'text-white hover:bg-white/20'
