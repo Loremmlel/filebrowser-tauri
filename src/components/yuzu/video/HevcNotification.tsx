@@ -37,7 +37,7 @@ export const YuzuHevcNotification: React.FC<YuzuHevcNotificationProps> = ({ clas
         <button className='absolute top-2 right-2' onClick={() => setClose(true)}>
           <XMarkIcon className='text-gray-400 h-4 w-4' />
         </button>
-        <div className='mt-4 flex items-center justify-between'>
+        <div className='flex items-center justify-between'>
           <div className='flex items-center'>
             {support.isSupported ? (
               <>
@@ -53,7 +53,7 @@ export const YuzuHevcNotification: React.FC<YuzuHevcNotificationProps> = ({ clas
           </div>
           <button
             onClick={() => setExpanded(!expanded)}
-            className='ml-2 text-xs underline focus:outline-none'
+            className='mr-8 text-xs underline focus:outline-none'
           >
             {expanded ? '收起' : '详情'}
           </button>
