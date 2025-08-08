@@ -6,6 +6,7 @@ import { YuzuVideoControlOverlay } from './VideoControlOverlay'
 import { YuzuTranscodeStatusBar } from '@/components/yuzu/TranscodeStatusBar'
 import { TranscodeState } from '@/types/transcode'
 import { YuzuLoading } from '@/components/yuzu/Loading'
+import { toast } from '@/utils/toast'
 
 interface YuzuVideoPlayerProps {
   path: string
@@ -158,12 +159,37 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
   // 监听全屏状态变化
   useEffect(() => {
     const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement)
+      const doc = document as Document & {
+        webkitFullscreenElement?: Element
+        mozFullScreenElement?: Element
+        msFullscreenElement?: Element
+      }
+
+      const isCurrentlyFullscreen = !!(
+        document.fullscreenElement ||
+        doc.webkitFullscreenElement ||
+        doc.mozFullScreenElement ||
+        doc.msFullscreenElement
+      )
+      setIsFullscreen(isCurrentlyFullscreen)
     }
 
-    document.addEventListener('fullscreenchange', handleFullscreenChange)
+    // 监听所有可能的全屏变化事件
+    const events = [
+      'fullscreenchange',
+      'webkitfullscreenchange',
+      'mozfullscreenchange',
+      'MSFullscreenChange',
+    ]
+
+    events.forEach(event => {
+      document.addEventListener(event, handleFullscreenChange)
+    })
+
     return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange)
+      events.forEach(event => {
+        document.removeEventListener(event, handleFullscreenChange)
+      })
     }
   }, [])
 
@@ -172,12 +198,33 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
 
     try {
       if (isFullscreen) {
-        await document.exitFullscreen()
+        // 退出全屏
+        if (document.exitFullscreen) {
+          await document.exitFullscreen()
+        }
       } else {
-        await containerRef.current.requestFullscreen()
+        // 进入全屏 - 检查各种兼容性方法
+        const element = containerRef.current as HTMLElement & {
+          webkitRequestFullscreen?: () => Promise<void>
+          mozRequestFullScreen?: () => Promise<void>
+          msRequestFullscreen?: () => Promise<void>
+        }
+
+        if (element.requestFullscreen) {
+          await element.requestFullscreen()
+        } else if (element.webkitRequestFullscreen) {
+          await element.webkitRequestFullscreen()
+        } else if (element.mozRequestFullScreen) {
+          await element.mozRequestFullScreen()
+        } else if (element.msRequestFullscreen) {
+          await element.msRequestFullscreen()
+        } else {
+          toast.warning('当前环境不支持全屏功能')
+          return
+        }
       }
-    } catch (err) {
-      console.error('切换全屏失败:', err)
+    } catch (error) {
+      toast.warning(`切换全屏失败: ${error instanceof Error ? error.message : '未知错误'}`)
     }
   }, [isFullscreen])
 
