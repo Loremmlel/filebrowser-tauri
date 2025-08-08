@@ -34,14 +34,70 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
     }
   }, [])
 
+  // 初始化HLS播放器的通用函数
+  const initializeHls = useCallback(
+    (sourceUrl: string, useLoadSource = true) => {
+      if (!videoRef.current) return false
+
+      if (Hls.isSupported()) {
+        cleanupHls()
+
+        const hls = new Hls({
+          maxBufferLength: 600,
+          autoStartLoad: true,
+          maxBufferHole: 0.5,
+        })
+
+        hlsRef.current = hls
+        hls.attachMedia(videoRef.current)
+
+        if (useLoadSource) {
+          hls.loadSource(sourceUrl)
+        } else {
+          // 直接播放模式，设置 src 而不是 loadSource
+          videoRef.current.src = sourceUrl
+        }
+
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          setIsLoading(false)
+        })
+
+        hls.on(Hls.Events.ERROR, (_, data) => {
+          if (data.fatal) {
+            switch (data.type) {
+              case Hls.ErrorTypes.NETWORK_ERROR:
+                setError(`网络错误，请检查网络连接。 信息: ${data.details}`)
+                break
+              case Hls.ErrorTypes.MEDIA_ERROR:
+                setError('媒体错误，视频格式不支持')
+                break
+              default:
+                setError(`播放器错误。 信息: ${data.details}`)
+                break
+            }
+          }
+        })
+
+        return true
+      }
+      return false
+    },
+    [cleanupHls]
+  )
+
   // 设置直接播放（支持HEVC）
   const setupDirectPlay = useCallback(() => {
-    if (!videoRef.current) return
-
     const directVideoUrl = `${serverUrl}/direct-video?path=${encodeURIComponent(path)}`
-    videoRef.current.src = directVideoUrl
+
+    if (!initializeHls(directVideoUrl, false)) {
+      // 如果不支持 HLS.js，直接使用原生播放
+      if (videoRef.current) {
+        videoRef.current.src = directVideoUrl
+      }
+    }
+
     setIsLoading(false)
-  }, [serverUrl, path])
+  }, [serverUrl, path, initializeHls])
 
   // 设置HLS播放（需要转码）
   const setupHlsPlay = useCallback(async () => {
@@ -58,45 +114,14 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
       ) {
         const playlistUrl = `${serverUrl}/video/${transcodeResult.id}/playlist.m3u8`
 
-        if (Hls.isSupported()) {
-          cleanupHls()
-
-          const hls = new Hls({
-            maxBufferLength: 600,
-            autoStartLoad: true,
-            maxBufferHole: 0.5,
-          })
-
-          hlsRef.current = hls
-
-          hls.loadSource(playlistUrl)
-          hls.attachMedia(videoRef.current)
-
-          hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        if (!initializeHls(playlistUrl, true)) {
+          // Safari原生支持HLS的fallback
+          if (videoRef.current?.canPlayType('application/vnd.apple.mpegurl')) {
+            videoRef.current.src = playlistUrl
             setIsLoading(false)
-          })
-
-          hls.on(Hls.Events.ERROR, (_, data) => {
-            if (data.fatal) {
-              switch (data.type) {
-                case Hls.ErrorTypes.NETWORK_ERROR:
-                  setError(`网络错误，请检查网络连接。 信息: ${data.details}`)
-                  break
-                case Hls.ErrorTypes.MEDIA_ERROR:
-                  setError('媒体错误，视频格式不支持')
-                  break
-                default:
-                  setError(`播放器错误。 信息: ${data.details}`)
-                  break
-              }
-            }
-          })
-        } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
-          // Safari原生支持HLS
-          videoRef.current.src = playlistUrl
-          setIsLoading(false)
-        } else {
-          setError('浏览器不支持HLS播放')
+          } else {
+            setError('浏览器不支持HLS播放')
+          }
         }
       } else {
         setError('转码启动失败')
@@ -105,7 +130,7 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
       setError(err instanceof Error ? err.message : '启动转码失败')
       setIsLoading(false)
     }
-  }, [serverUrl, path, startTranscode, cleanupHls])
+  }, [serverUrl, path, startTranscode, initializeHls])
 
   // 初始化视频播放
   useEffect(() => {
