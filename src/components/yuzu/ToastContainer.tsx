@@ -8,14 +8,14 @@ export const YuzuToastContainer: React.FC<{ children: React.ReactNode }> = ({ ch
   const getToastStyles = (toastType: ToastType) => {
     switch (toastType) {
       case ToastType.Success:
-        return 'bg-green-600/90 border-green-300'
+        return 'bg-green-600/90'
       case ToastType.Warning:
-        return 'bg-yellow-600/90 border-yellow-300'
+        return 'bg-yellow-600/90'
       case ToastType.Error:
-        return 'bg-red-600/90 border-red-300'
+        return 'bg-red-600/90'
       case ToastType.Info:
       default:
-        return 'bg-blue-600/90 border-blue-300'
+        return 'bg-blue-600/90'
     }
   }
 
@@ -30,8 +30,7 @@ export const YuzuToastContainer: React.FC<{ children: React.ReactNode }> = ({ ch
         }`}
       >
         <div
-          className={`${getToastStyles(type)} border-2 backdrop-blur-sm 
-        text-white px-6 py-2 rounded-2xl`}
+          className={`${getToastStyles(type)} backdrop-blur-sm text-white px-6 py-2 rounded-2xl`}
         >
           <p className='text-sm font-medium whitespace-nowrap max-w-xs truncate'>{message}</p>
         </div>
