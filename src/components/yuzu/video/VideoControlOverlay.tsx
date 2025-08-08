@@ -81,58 +81,35 @@ export const YuzuVideoControlOverlay = forwardRef<HTMLDivElement, VideoControlOv
 
     // 事件监听器设置
     useEffect(() => {
-      const overlay = overlayRef.current
-      if (!overlay) return
-
-      // 鼠标移动显示控制层
-      const handleMouseMove = () => {
-        if (!isVisible) {
-          show()
-        }
-      }
-
-      // 点击中层隐藏控制层
-      const handleClick = (e: MouseEvent) => {
-        if (e.target === overlay) {
-          toggle()
-        }
-      }
-
-      // 移动端事件
+      // 移动端事件监听
       if (isMobile) {
-        overlay.addEventListener('touchstart', handleTouchStart)
-        overlay.addEventListener('touchmove', handleTouchMove)
-        overlay.addEventListener('touchend', handleTouchEnd)
+        const videoContainer = overlayRef.current?.parentElement
+        if (videoContainer) {
+          const handleTouchStartWrapper = (e: Event) => handleTouchStart(e as TouchEvent)
+          const handleTouchMoveWrapper = (e: Event) => handleTouchMove(e as TouchEvent)
+          const handleTouchEndWrapper = () => handleTouchEnd()
+
+          videoContainer.addEventListener('touchstart', handleTouchStartWrapper)
+          videoContainer.addEventListener('touchmove', handleTouchMoveWrapper)
+          videoContainer.addEventListener('touchend', handleTouchEndWrapper)
+
+          return () => {
+            videoContainer.removeEventListener('touchstart', handleTouchStartWrapper)
+            videoContainer.removeEventListener('touchmove', handleTouchMoveWrapper)
+            videoContainer.removeEventListener('touchend', handleTouchEndWrapper)
+          }
+        }
       }
 
-      // 桌面端事件
-      overlay.addEventListener('mousemove', handleMouseMove)
-      overlay.addEventListener('click', handleClick)
+      // 键盘事件监听
       document.addEventListener('keydown', handleKeyDown)
       document.addEventListener('keyup', handleKeyUp)
 
       return () => {
-        if (isMobile) {
-          overlay.removeEventListener('touchstart', handleTouchStart)
-          overlay.removeEventListener('touchmove', handleTouchMove)
-          overlay.removeEventListener('touchend', handleTouchEnd)
-        }
-        overlay.removeEventListener('mousemove', handleMouseMove)
-        overlay.removeEventListener('click', handleClick)
         document.removeEventListener('keydown', handleKeyDown)
         document.removeEventListener('keyup', handleKeyUp)
       }
-    }, [
-      isVisible,
-      isMobile,
-      show,
-      toggle,
-      handleTouchStart,
-      handleTouchMove,
-      handleTouchEnd,
-      handleKeyDown,
-      handleKeyUp,
-    ])
+    }, [isMobile, handleTouchStart, handleTouchMove, handleTouchEnd, handleKeyDown, handleKeyUp])
 
     const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0
     const bufferedPercentage = duration > 0 ? (buffered / duration) * 100 : 0
@@ -159,12 +136,24 @@ export const YuzuVideoControlOverlay = forwardRef<HTMLDivElement, VideoControlOv
         .speed-icon-3 { animation: speed-pulse 1.2s infinite 0.8s; }
       `}</style>
 
+        {/* 事件捕获层 - 始终接收事件用于显示控制层 */}
+        <div
+          className='absolute inset-0 z-40'
+          onMouseMove={() => !isVisible && show()}
+          onClick={e => {
+            if (e.target === e.currentTarget) {
+              toggle()
+            }
+          }}
+        />
+
         {/* 主控制覆盖层 */}
         <div
           ref={overlayRef}
           className={`absolute inset-0 z-50 flex flex-col transition-opacity duration-300 ${
-            isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            isVisible ? 'opacity-100' : 'opacity-0'
           }`}
+          style={{ pointerEvents: isVisible ? 'auto' : 'none' }}
         >
           {/* 上层 */}
           <div
