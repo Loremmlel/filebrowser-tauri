@@ -7,7 +7,7 @@ import { listen, UnlistenFn } from '@tauri-apps/api/event'
 export const useAppInitialization = () => {
   const [showInitModal] = useState(true)
   const [udpBroadcastIp, setUdpBroadcastIp] = useState<string | null>(null)
-  const { serverUrl, setServerUrl, setBaseDir, setOnline } = useConfigStore()
+  const { setServerUrl, setBaseDir, setOnline } = useConfigStore()
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -25,7 +25,7 @@ export const useAppInitialization = () => {
     }
 
     initializeApp()
-  }, [setServerUrl, serverUrl])
+  }, [setServerUrl])
 
   useEffect(() => {
     let unlisten: UnlistenFn | null = null

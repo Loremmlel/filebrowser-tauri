@@ -26,17 +26,28 @@ export const YuzuImageViewer: React.FC<YuzuImageViewerProps> = ({
 }) => {
   const { serverUrl } = useConfigStore()
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const imageUrl = `${serverUrl}/image?path=${encodeURIComponent(file.path)}`
 
   function handleImageLoad() {
     setLoading(false)
+    setError(null)
   }
 
-  function handleImageError() {
+  function handleImageError(e: React.SyntheticEvent<HTMLImageElement, Event>) {
     setLoading(false)
-    setError(true)
+    let message = '图片加载失败'
+    // 尝试获取更详细的错误信息
+    if (e && e.currentTarget && e.currentTarget.src) {
+      message += `\n图片地址: ${e.currentTarget.src}`
+    }
+    setError(message)
+  }
+
+  function handleRetry() {
+    setLoading(true)
+    setError(null)
   }
 
   return (
@@ -84,12 +95,20 @@ export const YuzuImageViewer: React.FC<YuzuImageViewerProps> = ({
         {loading && <YuzuLoading />}
 
         {error ? (
-          <div className='text-white text-center'>
+          <div className='text-white text-center max-w-lg'>
             <p className='text-lg mb-2'>图片加载失败</p>
-            <p className='text-sm text-gray-300'>请检查网络连接或稍后重试</p>
+            <p className='text-sm text-gray-300 whitespace-pre-line'>{error}</p>
+            <button
+              onClick={handleRetry}
+              className='mt-4 px-4 py-2 bg-white/20 hover:bg-white/30 
+              text-white rounded transition-colors'
+            >
+              重试
+            </button>
           </div>
         ) : (
           <img
+            key={imageUrl + (error ? '-retry' : '')}
             src={imageUrl}
             alt={file.name}
             className='max-w-full max-h-full object-contain'
