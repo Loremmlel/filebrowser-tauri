@@ -136,7 +136,7 @@ export const BrowsePage: React.FC = () => {
           onClose={() => handleClosePreview()}
           onNext={() => handleImageNavigation('next')}
           onPrev={() => handleImageNavigation('prev')}
-          onDownlaod={() => handleDownload(previewItem!)}
+          onDownload={() => handleDownload(previewItem!)}
         />
       )}
 

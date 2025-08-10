@@ -19,7 +19,11 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": {
+        "default-src": "'self' data: blob: http: https:",
+        "img-src": "'self' data: blob: http: https:",
+        "media-src": "'self' data: blob: http: https:"
+      }
     }
   },
   "bundle": {

@@ -14,7 +14,7 @@ interface YuzuImageViewerProps {
   onClose: () => void
   onNext: () => void
   onPrev: () => void
-  onDownlaod?: () => void
+  onDownload?: () => void
 }
 
 export const YuzuImageViewer: React.FC<YuzuImageViewerProps> = ({
@@ -22,7 +22,7 @@ export const YuzuImageViewer: React.FC<YuzuImageViewerProps> = ({
   onClose,
   onNext,
   onPrev,
-  onDownlaod,
+  onDownload,
 }) => {
   const { serverUrl } = useConfigStore()
   const [loading, setLoading] = useState(true)
@@ -56,9 +56,9 @@ export const YuzuImageViewer: React.FC<YuzuImageViewerProps> = ({
       <div className='absolute top-4 left-4 right-4 flex justify-between items-center z-10'>
         <h3 className='text-white text-lg font-medium truncate max-w-md'>{file.name}</h3>
         <div className='flex space-x-2'>
-          {onDownlaod != null && (
+          {onDownload != null && (
             <button
-              onClick={onDownlaod}
+              onClick={onDownload}
               className='p-2 text-white hover:bg-white/20 rounded-full transition-colors'
             >
               <ArrowDownTrayIcon className='w-6 h-6' />
