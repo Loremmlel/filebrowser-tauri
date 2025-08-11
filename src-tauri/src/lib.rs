@@ -79,7 +79,6 @@ async fn start_udp_listener(app: &AppHandle) {
                                     DiscoveredServicePayload { ip: ip.to_string() },
                                 )
                                 .unwrap();
-                                break;
                             }
                         }
                     }
