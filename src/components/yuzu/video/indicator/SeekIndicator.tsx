@@ -1,6 +1,7 @@
 import { formatTime } from '@/utils/stringUtil'
 import { ChevronDoubleLeftIcon } from '@heroicons/react/24/outline'
 import { ChevronDoubleRightIcon } from '@heroicons/react/24/solid'
+import React from 'react'
 
 interface YuzuSeekIndicatorProps {
   seekDirection: 'forward' | 'backward' | null

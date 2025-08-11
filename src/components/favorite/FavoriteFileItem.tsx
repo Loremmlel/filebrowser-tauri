@@ -1,6 +1,6 @@
 import { FileInfo, FileType } from '@/types/files'
 import { getFileIcon } from '@/utils/iconUtil'
-import { useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { YuzuThumbnail } from '../yuzu/Thumbnail'
 
 interface FavoriteHeaderProps {

@@ -48,10 +48,9 @@ export const useVideoControls = (
     if (hideTimerRef.current) {
       clearTimeout(hideTimerRef.current)
     }
-    const timer = setTimeout(() => {
+    hideTimerRef.current = setTimeout(() => {
       setIsVisible(false)
     }, 3000)
-    hideTimerRef.current = timer
   }, [])
 
   function resetHideVolumeTimer(createNew = false) {
@@ -60,10 +59,9 @@ export const useVideoControls = (
       hideVolumeTimerRef.current = null
     }
     if (createNew) {
-      const timer = setTimeout(() => {
+      hideVolumeTimerRef.current = setTimeout(() => {
         setShowVolumeIndicator(false)
       }, 1000)
-      hideVolumeTimerRef.current = timer
     }
   }
 
@@ -116,14 +114,12 @@ export const useVideoControls = (
     }
 
     // 设置长按计时器
-    const longPressTimer = setTimeout(() => {
+    longPressTimerRef.current = setTimeout(() => {
       setTouchData(prev => ({ ...prev, isLongPress: true }))
       setIsSpeedMode(true)
       onSpeedChange(3)
       setShowSpeedIndicator(true)
     }, 500)
-
-    longPressTimerRef.current = longPressTimer
 
     setTouchData({
       startX: touch.clientX,
@@ -218,14 +214,12 @@ export const useVideoControls = (
 
     // 长按右键三倍速
     if (e.key === 'ArrowRight' && !isSpeedMode) {
-      const timer = setTimeout(() => {
+      // 存储计时器引用
+      longPressTimerRef.current = setTimeout(() => {
         setIsSpeedMode(true)
         onSpeedChange(3)
         setShowSpeedIndicator(true)
       }, 500)
-
-      // 存储计时器引用
-      longPressTimerRef.current = timer
     }
   }
 

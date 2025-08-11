@@ -1,7 +1,6 @@
 import { TOAST_DURATION } from '@/constants/toast'
 import { create } from 'zustand'
 
-// Toast 类型
 export enum ToastType {
   Info = 'info',
   Warning = 'warning',

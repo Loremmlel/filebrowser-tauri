@@ -117,21 +117,6 @@ export const useVideoStatus = (videoRef: MutableRefObject<HTMLVideoElement | nul
         videoRef.current.playbackRate = rate
       }
     },
-    toggleFullscreen: async () => {
-      if (!videoRef.current) {
-        return
-      }
-
-      try {
-        if (isFullscreen) {
-          await document.exitFullscreen()
-        } else {
-          await videoRef.current.requestFullscreen()
-        }
-      } catch (error) {
-        setError(error instanceof Error ? error.message : '切换全屏错误')
-      }
-    },
   }
 
   return {

@@ -11,7 +11,7 @@ import { useImagePreview } from '@/hooks/browse/useImagePreview'
 import { useBrowseStore } from '@/stores/browseStore'
 import { useConfigStore } from '@/stores/configStore'
 import { FileInfo, FileType } from '@/types/files'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 export const BrowsePage: React.FC = () => {

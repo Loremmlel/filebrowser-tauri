@@ -7,7 +7,7 @@ import { useFavoriteData } from '@/hooks/favorite/useFavoriteData'
 import { useFavoriteSelection } from '@/hooks/favorite/useFavoriteSelection'
 import { FileInfo } from '@/types/files'
 import { toast } from '@/utils/toast'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export const FavoritePage: React.FC = () => {
@@ -157,7 +157,7 @@ export const FavoritePage: React.FC = () => {
       <CreateFavoriteModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        onConirm={handleCreateFavorite}
+        onConfirm={handleCreateFavorite}
       />
     </div>
   )
