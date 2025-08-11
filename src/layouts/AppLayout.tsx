@@ -10,7 +10,7 @@ interface AppLayoutProps {
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   return (
     <YuzuToastContainer>
-      <div className='flex flex-col h-screen bg-gray-50'>
+      <div className='flex flex-col h-full w-full bg-gray-50'>
         <YuzuHevcNotification />
         {/* 主内容区域 */}
         <main className='relative flex-1 overflow-hidden'>{children}</main>
