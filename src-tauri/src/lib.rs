@@ -73,7 +73,6 @@ async fn start_udp_listener(app: &AppHandle) {
                     if let Ok(message) = std::str::from_utf8(&buf[..len]) {
                         if let Some((handshake, ip)) = message.split_once(":") {
                             if handshake == HANDSHAKE_MESSAGE {
-                                println!("Discovered server at IP: {}", ip);
                                 app.emit(
                                     "service-discovered",
                                     DiscoveredServicePayload { ip: ip.to_string() },

@@ -1,6 +1,10 @@
 import { ROUTES } from '@/constants/routes'
-import { HomeIcon, StarIcon } from '@heroicons/react/24/outline'
-import { HomeIcon as HomeIconSolid, StarIcon as StarIconSolid } from '@heroicons/react/24/solid'
+import { HomeIcon, StarIcon, Cog6ToothIcon } from '@heroicons/react/24/outline'
+import {
+  HomeIcon as HomeIconSolid,
+  StarIcon as StarIconSolid,
+  Cog6ToothIcon as Cog6ToothIconSolid,
+} from '@heroicons/react/24/solid'
 import { useLocation, useNavigate } from 'react-router-dom'
 import React from 'react'
 
@@ -23,6 +27,12 @@ const navItems: NavItem[] = [
     label: '收藏',
     icon: StarIcon,
     activeIcon: StarIconSolid,
+  },
+  {
+    route: ROUTES.SETTINGS,
+    label: '设置',
+    icon: Cog6ToothIcon,
+    activeIcon: Cog6ToothIconSolid,
   },
 ]
 
