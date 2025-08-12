@@ -20,6 +20,17 @@ pub enum FileType {
     Other,
 }
 
+impl ToString for FileType {
+    fn to_string(&self) -> String {
+        match self {
+            FileType::Folder => "Folder".to_string(),
+            FileType::Image => "Image".to_string(),
+            FileType::Video => "Video".to_string(),
+            FileType::Other => "Other".to_string(),
+        }
+    }
+}
+
 pub trait ToFileType {
     fn to_file_type(&self) -> FileType;
 }

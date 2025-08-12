@@ -20,7 +20,7 @@ pub struct FavoriteFileDto {
     pub id: i64,
     pub favorite_id: i64,
     pub filename: String,
-    pub file_size: u64,
+    pub file_size: i64,
     pub file_type: FileType,
     pub file_path: String,
     pub last_modified: i64,
@@ -35,8 +35,8 @@ pub struct AddFileToFavoriteRequest {
     pub file_path: String,
     pub is_directory: bool,
     pub file_type: FileType,
-    pub last_modified: u64,
-    pub file_size: u64,
+    pub last_modified: i64,
+    pub file_size: i64,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -61,7 +61,7 @@ pub struct FavoriteFile {
     pub id: i64,
     pub favorite_id: i64,
     pub filename: String,
-    pub file_size: u64,
+    pub file_size: i64,
     pub file_type: String,
     pub file_path: String,
     pub last_modified: i64,
