@@ -4,6 +4,8 @@ use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 use tauri::command;
 
+use crate::repos::offline::Database;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AppConfig {
@@ -50,4 +52,12 @@ pub fn set_app_config(config: AppConfig) {
     with_config_mut(|current_config| {
         *current_config = config;
     });
+}
+
+#[command]
+pub async fn init_database() {
+    let database_url = "sqlite:./filebrowser.db";
+    Database::init(database_url)
+        .await
+        .expect("初始化Sqlite数据库失败");
 }

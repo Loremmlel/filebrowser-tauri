@@ -17,11 +17,11 @@ impl Repo for OfflineFilesRepo {
     type UpdateRequest = ();
 
     async fn delete(_id: Self::Id) -> Result<bool, ApiError> {
-        let file_path = format!("{}{}", &Self::get_base_dir(), _id);
-        let file = Path::new(&file_path);
+        let path_string = format!("{}{}", &Self::get_base_dir(), _id);
+        let file_path = Path::new(&path_string);
 
-        if file.exists() {
-            std::fs::remove_file(file)
+        if file_path.exists() {
+            std::fs::remove_file(file_path)
                 .map_err(|e| ApiError::new(500, format!("删除文件失败: {}", e)))?;
             Ok(true)
         } else {
@@ -34,15 +34,15 @@ impl OfflineRepo for OfflineFilesRepo {}
 
 impl FilesRepo for OfflineFilesRepo {
     async fn get_files(path: &str) -> Result<Vec<FileInfo>, ApiError> {
-        let dir_path = format!("{}{}", &Self::get_base_dir(), path);
-        let dir = Path::new(&dir_path);
+        let path_string = format!("{}{}", &Self::get_base_dir(), path);
+        let dir_path = Path::new(&path_string);
 
-        if !dir.is_dir() {
+        if !dir_path.is_dir() {
             return Err(ApiError::new(400, "指定的路径不是一个目录".to_string()));
         }
 
         let mut files = Vec::new();
-        let entries = dir
+        let entries = dir_path
             .read_dir()
             .map_err(|e| ApiError::new(500, format!("读取目录失败: {}", e)))?;
 
