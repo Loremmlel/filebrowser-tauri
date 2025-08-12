@@ -27,7 +27,7 @@ impl Repo for OfflineFavoritesRepo {
         let now = Utc::now();
 
         let result = sqlx::query(
-            "insert into favorites(name, created_at, updated_at, sort_order) values(?, ?, ?, ?)",
+            "INSERT INTO favorites(name, created_at, updated_at, sort_order) VALUES(?, ?, ?, ?)",
         )
         .bind(&data.name)
         .bind(&now)
@@ -51,7 +51,7 @@ impl Repo for OfflineFavoritesRepo {
     async fn get_all() -> Result<Vec<Self::Item>, ApiError> {
         let pool = Self::get_pool()?;
         let favorites =
-            sqlx::query_as::<_, Favorite>("select * from favorites order by sort_order")
+            sqlx::query_as::<_, Favorite>("SELECT * FROM favorites ORDER BY sort_order")
                 .fetch_all(pool)
                 .await
                 .map_err(|e| ApiError::new(500, format!("获取收藏失败: {}", e)))?;
@@ -69,7 +69,7 @@ impl Repo for OfflineFavoritesRepo {
     async fn get(id: Self::Id) -> Result<Self::Item, ApiError> {
         let pool = Self::get_pool()?;
         let favorite = sqlx::query_as::<_, Favorite>(
-            "select id, name, created_at, updated_at, sort_order from favorites where id = ?",
+            "SELECT id, name, created_at, updated_at, sort_order FROM favorites WHERE id = ?",
         )
         .bind(id)
         .fetch_optional(pool)
@@ -89,7 +89,7 @@ impl Repo for OfflineFavoritesRepo {
 
     async fn delete(id: Self::Id) -> Result<bool, ApiError> {
         let pool = Self::get_pool()?;
-        let result = sqlx::query("delete from favorites where id = ?")
+        let result = sqlx::query("DELETE FROM favorites WHERE id = ?")
             .bind(id)
             .execute(pool)
             .await
@@ -117,9 +117,9 @@ impl FavoritesRepo for OfflineFavoritesRepo {
 
         sqlx::query(
                 "
-                insert into favorite_files 
+                INSERT INTO favorite_files 
                 (favorite_id, filename, file_size, file_type, file_path, last_modified, is_directory, created_at)
-                values (?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 "
             )
             .bind(favorite_id)
@@ -178,10 +178,10 @@ impl OfflineFavoritesRepo {
         let pool = Self::get_pool()?;
         let files = sqlx::query_as::<_, FavoriteFile>(
             "
-            select id, favorite_id, filename, file_size, file_type, file_path, 
+            SELECT id, favorite_id, filename, file_size, file_type, file_path, 
                    last_modified, is_directory, created_at 
-            from favorite_files 
-            where favorite_id = ?
+            FROM favorite_files 
+            WHERE favorite_id = ?
             ",
         )
         .bind(favorite_id)
@@ -194,7 +194,7 @@ impl OfflineFavoritesRepo {
 
     async fn favorite_exists(id: i64) -> Result<bool, ApiError> {
         let pool = Self::get_pool()?;
-        let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM favorites WHERE id = ?")
+        let count: i64 = sqlx::query_scalar("SELECT count(*) FROM favorites WHERE id = ?")
             .bind(id)
             .fetch_one(pool)
             .await
