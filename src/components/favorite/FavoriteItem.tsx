@@ -2,6 +2,7 @@ import { FavoriteDto, FavoriteFileDto } from '@/types/favorite'
 import { FileInfo } from '@/types/files'
 import { ChevronRightIcon } from '@heroicons/react/24/solid'
 import { FavoriteFileItem } from './FavoriteFileItem'
+import React from 'react'
 
 interface FavoriteItemProps {
   favorite: FavoriteDto

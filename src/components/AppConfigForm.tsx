@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useAppInitialization } from '@/hooks/useAppInitialization'
 
 interface AppConfigFormProps {
@@ -10,14 +10,14 @@ interface AppConfigFormProps {
   disabled?: boolean
 }
 
-export const AppConfigForm = ({
+export const AppConfigForm: React.FC<AppConfigFormProps> = ({
   initialServerUrl = 'http://localhost:8080',
   initialBaseDir = '/',
   initialOnline = true,
   onSubmit,
   submitText = '确定',
   disabled = false,
-}: AppConfigFormProps) => {
+}) => {
   const { udpBroadcastIp } = useAppInitialization()
 
   const [serverUrl, setServerUrl] = useState(initialServerUrl)

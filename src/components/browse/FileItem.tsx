@@ -5,7 +5,7 @@ import {
   TrashIcon,
   HeartIcon as HeartSolidIcon,
 } from '@heroicons/react/24/solid'
-import { useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { YuzuThumbnail } from '../yuzu/Thumbnail'
 import { getFileIcon } from '@/utils/iconUtil'
 import { formatBytes } from '@/utils/stringUtil'

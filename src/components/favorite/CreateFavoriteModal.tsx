@@ -1,16 +1,16 @@
-import { FormEvent, useState } from 'react'
+import React, { FormEvent, useState } from 'react'
 import { YuzuModal } from '../yuzu/Modal'
 
 interface CreateFavoriteModalProps {
   isOpen: boolean
   onClose: () => void
-  onConirm: (name: string, sortOrder: number) => void
+  onConfirm: (name: string, sortOrder: number) => void
 }
 
 export const CreateFavoriteModal: React.FC<CreateFavoriteModalProps> = ({
   isOpen,
   onClose,
-  onConirm,
+  onConfirm,
 }) => {
   const [name, setName] = useState('')
   const [sortOrder, setSortOrder] = useState(0)
@@ -18,7 +18,7 @@ export const CreateFavoriteModal: React.FC<CreateFavoriteModalProps> = ({
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
     if (name.trim()) {
-      onConirm(name.trim(), sortOrder)
+      onConfirm(name.trim(), sortOrder)
       onClose()
     }
   }

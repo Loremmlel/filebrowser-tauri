@@ -1,4 +1,5 @@
 import { PlusIcon, Squares2X2Icon, TrashIcon } from '@heroicons/react/24/solid'
+import React from 'react'
 
 interface FavoriteHeaderProps {
   onAddClick: () => void

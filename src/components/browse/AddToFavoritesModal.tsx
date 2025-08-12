@@ -1,5 +1,5 @@
 import { FavoriteDto } from '@/types/favorite'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { YuzuModal } from '../yuzu/Modal'
 
 interface AddFavoritesModalProps {
