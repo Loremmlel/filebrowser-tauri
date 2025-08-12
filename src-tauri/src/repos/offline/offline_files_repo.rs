@@ -15,6 +15,19 @@ impl Repo for OfflineFilesRepo {
     type Item = FileInfo;
     type CreateRequest = ();
     type UpdateRequest = ();
+
+    async fn delete(_id: Self::Id) -> Result<bool, ApiError> {
+        let file_path = format!("{}{}", &Self::get_base_dir(), _id);
+        let file = Path::new(&file_path);
+
+        if file.exists() {
+            std::fs::remove_file(file)
+                .map_err(|e| ApiError::new(500, format!("删除文件失败: {}", e)))?;
+            Ok(true)
+        } else {
+            Err(ApiError::new(404, "文件不存在".to_string()))
+        }
+    }
 }
 
 impl OfflineRepo for OfflineFilesRepo {}
@@ -37,18 +50,21 @@ impl FilesRepo for OfflineFilesRepo {
             let entry =
                 entry.map_err(|e| ApiError::new(500, format!("读取目录条目失败: {}", e)))?;
 
-            if let Ok(file_info) = create_file_info(entry) {
+            if let Ok(file_info) = Self::create_file_info(entry) {
                 files.push(file_info);
             }
         }
 
-        sort_files(&mut files);
+        Self::sort_files(&mut files);
         Ok(files)
     }
 
     /// 下载文件的实现不适用于离线存储库，都在你硬盘上了下载什么。
     async fn download_file(_path: &str, _filename: &str) -> Result<(), ApiError> {
-        Ok(())
+        Err(ApiError::new(
+            400,
+            format!("离线存储库不支持下载文件, {}", _path),
+        ))
     }
 }
 
@@ -84,5 +100,13 @@ impl OfflineFilesRepo {
             last_modified,
             path: path.to_str().unwrap_or("").to_string(),
         })
+    }
+
+    fn sort_files(files: &mut Vec<FileInfo>) {
+        files.sort_by(|a, b| match (a.is_directory, b.is_directory) {
+            (true, false) => Ordering::Less,
+            (false, true) => Ordering::Greater,
+            _ => a.name.cmp(&b.name),
+        });
     }
 }

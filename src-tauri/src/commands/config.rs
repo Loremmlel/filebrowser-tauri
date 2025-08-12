@@ -36,6 +36,10 @@ pub fn with_config_mut<T>(f: impl FnOnce(&mut AppConfig) -> T) -> T {
     f(&mut config)
 }
 
+pub fn is_online() -> bool {
+    with_config(|config| config.online)
+}
+
 #[command]
 pub fn get_app_config() -> AppConfig {
     with_config(|config| config.clone())
