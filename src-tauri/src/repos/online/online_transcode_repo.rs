@@ -22,18 +22,18 @@ impl Repo for OnlineTranscodeRepo {
     type CreateRequest = String;
     type UpdateRequest = ();
 
-    async fn create(_data: Self::CreateRequest) -> Result<Self::Item, ApiError> {
-        let endpoint = format!("transcode?path={}", &_data);
+    async fn create(data: Self::CreateRequest) -> Result<Self::Item, ApiError> {
+        let endpoint = format!("transcode?path={}", &data);
         api_post(&Self::get_server_url(), &endpoint, &()).await
     }
 
-    async fn get(_id: Self::Id) -> Result<Self::Item, ApiError> {
-        let endpoint = format!("transcoding/{}", &_id);
+    async fn get(id: Self::Id) -> Result<Self::Item, ApiError> {
+        let endpoint = format!("transcoding/{}", &id);
         api_get(&Self::get_server_url(), &endpoint).await
     }
 
-    async fn delete(_id: Self::Id) -> Result<bool, ApiError> {
-        let endpoint = format!("transcoding/{}", &_id);
+    async fn delete(id: Self::Id) -> Result<bool, ApiError> {
+        let endpoint = format!("transcoding/{}", &id);
         api_delete_success(&Self::get_server_url(), &endpoint).await
     }
 }

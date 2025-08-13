@@ -15,8 +15,8 @@ impl Repo for OnlineFilesRepo {
     type CreateRequest = ();
     type UpdateRequest = ();
 
-    async fn delete(_id: Self::Id) -> Result<bool, ApiError> {
-        let endpoint = format!("files?path={}", _id);
+    async fn delete(id: Self::Id) -> Result<bool, ApiError> {
+        let endpoint = format!("files?path={}", id);
         api_delete_success(&Self::get_server_url(), &endpoint).await
     }
 }

@@ -21,8 +21,8 @@ impl Repo for OfflineFilesRepo {
     type CreateRequest = ();
     type UpdateRequest = ();
 
-    async fn delete(_id: Self::Id) -> Result<bool, ApiError> {
-        let path_string = format!("{}{}", &Self::get_base_dir(), _id);
+    async fn delete(id: Self::Id) -> Result<bool, ApiError> {
+        let path_string = format!("{}{}", &Self::get_base_dir(), id);
         let file_path = Path::new(&path_string);
 
         if file_path.exists() {
