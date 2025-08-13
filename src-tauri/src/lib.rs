@@ -1,6 +1,7 @@
 use tauri::{AppHandle, Emitter};
 
 use crate::commands::config::init_database;
+use crate::commands::favorites::update_favorite;
 use crate::commands::transcode::{start_transcode, stop_transcode};
 use crate::commands::{
     config::{get_app_config, set_app_config},
@@ -51,6 +52,7 @@ pub fn run() {
             get_favorites,
             create_favorite,
             delete_favorite,
+            update_favorite,
             add_file_to_favorite,
             get_all_favorite_files,
             delete_favorite_file,

@@ -46,6 +46,13 @@ pub struct CreateFavoriteRequest {
     pub sort_order: i32,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateFavoriteRequest {
+    pub name: Option<String>,
+    pub sort_order: Option<i32>,
+}
+
 /// 数据库实体
 #[derive(Debug, sqlx::FromRow)]
 pub struct Favorite {

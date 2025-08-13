@@ -1,10 +1,13 @@
 use crate::{
     models::{
         error::ApiError,
-        favorite::{AddFileToFavoriteRequest, CreateFavoriteRequest, FavoriteDto, FavoriteFileDto},
+        favorite::{
+            AddFileToFavoriteRequest, CreateFavoriteRequest, FavoriteDto, FavoriteFileDto,
+            UpdateFavoriteRequest,
+        },
     },
     repos::{favorites_repo::FavoritesRepo, online::OnlineRepo, Repo},
-    services::api_service::{api_delete_success, api_get, api_post, api_post_success},
+    services::api_service::{api_delete_success, api_get, api_post, api_post_success, api_put},
 };
 
 pub struct OnlineFavoritesRepo;
@@ -13,19 +16,24 @@ impl Repo for OnlineFavoritesRepo {
     type Id = i64;
     type Item = FavoriteDto;
     type CreateRequest = CreateFavoriteRequest;
-    type UpdateRequest = ();
+    type UpdateRequest = UpdateFavoriteRequest;
 
-    async fn create(_data: Self::CreateRequest) -> Result<Self::Item, ApiError> {
-        api_post(&Self::get_server_url(), "favorites", &_data).await
+    async fn create(data: Self::CreateRequest) -> Result<Self::Item, ApiError> {
+        api_post(&Self::get_server_url(), "favorites", &data).await
     }
 
     async fn get_all() -> Result<Vec<Self::Item>, ApiError> {
         api_get(&Self::get_server_url(), "favorites").await
     }
 
-    async fn delete(_id: i64) -> Result<bool, ApiError> {
-        let endpoint = format!("favorites/{}", _id);
+    async fn delete(id: i64) -> Result<bool, ApiError> {
+        let endpoint = format!("favorites/{}", id);
         api_delete_success(&Self::get_server_url(), &endpoint).await
+    }
+
+    async fn update(id: Self::Id, data: Self::UpdateRequest) -> Result<Self::Item, ApiError> {
+        let endpoint = format!("favorites/{}", id);
+        api_put(&Self::get_server_url(), &endpoint, &data).await
     }
 }
 

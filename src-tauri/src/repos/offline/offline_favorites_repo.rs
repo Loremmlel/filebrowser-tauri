@@ -5,7 +5,7 @@ use crate::{
         error::ApiError,
         favorite::{
             AddFileToFavoriteRequest, CreateFavoriteRequest, Favorite, FavoriteDto, FavoriteFile,
-            FavoriteFileDto,
+            FavoriteFileDto, UpdateFavoriteRequest,
         },
     },
     repos::{favorites_repo::FavoritesRepo, offline::Database, Repo},
@@ -20,7 +20,7 @@ impl Repo for OfflineFavoritesRepo {
 
     type CreateRequest = CreateFavoriteRequest;
 
-    type UpdateRequest = ();
+    type UpdateRequest = UpdateFavoriteRequest;
 
     async fn create(data: Self::CreateRequest) -> Result<Self::Item, ApiError> {
         let pool = Self::get_pool()?;
@@ -83,8 +83,30 @@ impl Repo for OfflineFavoritesRepo {
         Ok(dto)
     }
 
-    async fn update(_id: Self::Id, _data: Self::UpdateRequest) -> Result<Self::Item, ApiError> {
-        todo!()
+    async fn update(id: Self::Id, data: Self::UpdateRequest) -> Result<Self::Item, ApiError> {
+        let pool = Self::get_pool()?;
+        let now = Utc::now();
+
+        // 更新收藏夹信息
+        sqlx::query(r"UPDATE favorites SET name = ?, updated_at = ?, sort_order = ? WHERE id = ?")
+            .bind(&data.name)
+            .bind(&now)
+            .bind(&data.sort_order)
+            .bind(id)
+            .execute(pool)
+            .await
+            .map_err(|e| ApiError::new(500, format!("更新收藏失败: {}", e)))?;
+
+        // 获取更新后的收藏夹信息
+        let favorite = sqlx::query_as::<_, Favorite>(
+            r"SELECT id, name, created_at, updated_at, sort_order FROM favorites WHERE id = ?",
+        )
+        .bind(id)
+        .fetch_one(pool)
+        .await
+        .map_err(|e| ApiError::new(500, format!("获取更新后的收藏失败: {}", e)))?;
+
+        Ok(FavoriteDto::from(favorite))
     }
 
     async fn delete(id: Self::Id) -> Result<bool, ApiError> {

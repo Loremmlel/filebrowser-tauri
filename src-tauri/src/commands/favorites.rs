@@ -4,6 +4,7 @@ use crate::commands::config::is_online;
 use crate::models::error::ApiError;
 use crate::models::favorite::{
     AddFileToFavoriteRequest, CreateFavoriteRequest, FavoriteDto, FavoriteFileDto,
+    UpdateFavoriteRequest,
 };
 use crate::repos::favorites_repo::FavoritesRepo;
 use crate::repos::offline::offline_favorites_repo::OfflineFavoritesRepo;
@@ -64,5 +65,17 @@ pub async fn delete_favorite(id: i64) -> Result<bool, ApiError> {
         OnlineFavoritesRepo::delete(id).await
     } else {
         OfflineFavoritesRepo::delete(id).await
+    }
+}
+
+#[command]
+pub async fn update_favorite(
+    id: i64,
+    request: UpdateFavoriteRequest,
+) -> Result<FavoriteDto, ApiError> {
+    if is_online() {
+        OnlineFavoritesRepo::update(id, request).await
+    } else {
+        OfflineFavoritesRepo::update(id, request).await
     }
 }

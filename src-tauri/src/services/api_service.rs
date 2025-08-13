@@ -129,6 +129,15 @@ pub async fn api_post<T: for<'de> Deserialize<'de>, R: Serialize>(
     parse_api_response(response).await
 }
 
+pub async fn api_put<T: for<'de> Deserialize<'de>, R: Serialize>(
+    server_url: &str,
+    endpoint: &str,
+    json_data: &R,
+) -> Result<T, ApiError> {
+    let response = send_request_with_json(Method::PUT, server_url, endpoint, json_data).await?;
+    parse_api_response(response).await
+}
+
 /// POST 请求并返回是否成功
 pub async fn api_post_success<R: Serialize>(
     server_url: &str,
