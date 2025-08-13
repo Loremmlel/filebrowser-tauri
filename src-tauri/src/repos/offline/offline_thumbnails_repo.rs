@@ -57,6 +57,7 @@ impl OfflineRepo for OfflineThumbnailsRepo {}
 
 impl ThumbnailsRepo for OfflineThumbnailsRepo {
     async fn get_image_thumbnail(id: Self::Id) -> Result<Self::Item, ApiError> {
+        println!("获取图片缩略图: {}", id);
         let img =
             image::open(id).map_err(|e| ApiError::new(500, format!("打开图片失败: {}", e)))?;
         let (width, height) = img.dimensions();
@@ -77,7 +78,7 @@ impl ThumbnailsRepo for OfflineThumbnailsRepo {
 
         let mut buf = Cursor::new(Vec::new());
         thumbnail
-            .write_to(&mut buf, image::ImageFormat::Jpeg)
+            .write_to(&mut buf, image::ImageFormat::Png)
             .map_err(|e| ApiError::new(500, format!("写入缩略图失败: {}", e)))?;
 
         Ok(buf.into_inner())
