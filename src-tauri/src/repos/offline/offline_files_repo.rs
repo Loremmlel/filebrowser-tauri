@@ -1,4 +1,9 @@
-use std::{cmp::Ordering, path::Path};
+use std::{
+    cmp::Ordering,
+    path::{Path, PathBuf},
+};
+
+use pathdiff::diff_paths;
 
 use crate::{
     models::{
@@ -92,13 +97,20 @@ impl OfflineFilesRepo {
             .map_err(|e| ApiError::new(500, format!("时间错误: {}", e)))?
             .as_secs();
 
+        let base_dir_path = PathBuf::from(Self::get_base_dir());
         Ok(FileInfo {
             name: file_name.to_string(),
             size: metadata.len(),
             file_type: path.to_file_type(),
             is_directory: metadata.is_dir(),
             last_modified,
-            path: path.to_str().unwrap_or("").to_string(),
+            path: format!(
+                "/{}",
+                diff_paths(&path, &base_dir_path)
+                    .unwrap_or_else(|| base_dir_path)
+                    .to_string_lossy()
+                    .into_owned()
+            ),
         })
     }
 
