@@ -2,9 +2,9 @@ use std::sync::{Arc, RwLock};
 
 use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
-use tauri::command;
+use tauri::{command, AppHandle, Manager};
 
-use crate::repos::offline::Database;
+use crate::{models::error::ApiError, repos::offline::Database};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -55,9 +55,29 @@ pub fn set_app_config(config: AppConfig) {
 }
 
 #[command]
-pub async fn init_database() {
-    let database_url = "sqlite:./filebrowser.db";
-    Database::init(database_url)
-        .await
-        .expect("初始化Sqlite数据库失败");
+pub async fn init_database(app: &AppHandle) -> Result<(), ApiError> {
+    let db_path = match app.path().app_local_data_dir() {
+        Ok(path) => {
+            if !path.exists() {
+                if let Err(e) = std::fs::create_dir_all(&path) {
+                    return Err(ApiError::new(500, format!("创建数据库目录失败: {}", e)));
+                }
+            }
+            path.join("filebrowser.db")
+        }
+        Err(e) => {
+            return Err(ApiError::new(
+                500,
+                format!("无法获取应用本地数据目录: {}", e),
+            ));
+        }
+    };
+
+    let database_url = format!("sqlite:{}", db_path.to_str().unwrap_or_default());
+    if database_url == "sqlite:" {
+        return Err(ApiError::new(500, "数据库路径无效".to_string()));
+    }
+
+    let result = Database::init(&database_url).await;
+    result
 }

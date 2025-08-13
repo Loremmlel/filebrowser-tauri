@@ -1,6 +1,6 @@
 use tauri::{AppHandle, Emitter};
 
-use crate::commands::config::{init_database, is_online};
+use crate::commands::config::init_database;
 use crate::commands::transcode::{start_transcode, stop_transcode};
 use crate::commands::{
     config::{get_app_config, set_app_config},
@@ -28,11 +28,10 @@ pub fn run() {
             tauri::async_runtime::spawn(async move {
                 start_udp_listener(&app_handle).await;
             });
-            if !is_online() {
-                tauri::async_runtime::spawn(async {
-                    init_database().await;
-                });
-            }
+            let app_handle = app.handle().clone();
+            tauri::async_runtime::spawn(async move {
+                init_database(&app_handle).await;
+            });
             Ok(())
         })
         .plugin(tauri_plugin_opener::init())

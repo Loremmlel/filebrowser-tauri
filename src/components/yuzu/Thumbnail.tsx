@@ -2,7 +2,7 @@ import { fileService } from '@/api/fileService'
 import { FileInfo, FileType } from '@/types/files'
 import React, { useEffect, useState } from 'react'
 import { YuzuLoading } from './Loading'
-import { PhotoIcon, VideoCameraIcon } from '@heroicons/react/24/solid'
+import { getFileIcon } from '@/utils/iconUtil'
 
 interface YuzuThumbnailProps {
   file: FileInfo
@@ -52,10 +52,10 @@ export const YuzuThumbnail: React.FC<YuzuThumbnailProps> = ({ file, className })
   }
 
   if (error || thumbnailUrl == null) {
-    const Icon = file.type === FileType.Image ? PhotoIcon : VideoCameraIcon
+    const Icon = getFileIcon(file.type)
     return (
       <div className={`${className} flex items-center justify-center bg-gray-100 rounded`}>
-        <Icon className='w-8 h-8 text-gray-400' />
+        {Icon}
       </div>
     )
   }
