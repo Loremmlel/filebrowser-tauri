@@ -1,6 +1,6 @@
 import { FavoriteDto, FavoriteFileDto } from '@/types/favorite'
 import { FileInfo } from '@/types/files'
-import { ChevronRightIcon } from '@heroicons/react/24/solid'
+import { ChevronRightIcon, PencilIcon } from '@heroicons/react/24/solid'
 import { FavoriteFileItem } from './FavoriteFileItem'
 import React from 'react'
 
@@ -10,6 +10,7 @@ interface FavoriteItemProps {
   onToggleSelection: () => void
   onClick: () => void
   onItemClick: (file: FileInfo) => void
+  onEdit?: () => void
 }
 
 export const FavoriteItem: React.FC<FavoriteItemProps> = ({
@@ -18,6 +19,7 @@ export const FavoriteItem: React.FC<FavoriteItemProps> = ({
   onToggleSelection,
   onClick,
   onItemClick,
+  onEdit,
 }) => {
   function convertToFileInfo(favoriteFile: FavoriteFileDto): FileInfo {
     return {
@@ -47,15 +49,30 @@ export const FavoriteItem: React.FC<FavoriteItemProps> = ({
           <h3 className='text-lg font-semibold text-gray-900 truncate'>{favorite.name}</h3>
         </div>
 
-        {/* 进入收藏夹按钮 */}
-        <button
-          onClick={onClick}
-          className='flex items-center space-x-1 px-3 py-1 text-sm text-blue-600 
-          hover:bg-blue-50 rounded-md transition-colors'
-        >
-          <span>{favorite.files.length}个内容</span>
-          <ChevronRightIcon className='w-4 h-4' />
-        </button>
+        {/* 操作按钮组 */}
+        <div className='flex items-center space-x-2'>
+          {/* 编辑按钮 */}
+          {onEdit && (
+            <button
+              onClick={onEdit}
+              className='p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 
+              rounded-md transition-colors'
+              title='编辑收藏夹'
+            >
+              <PencilIcon className='w-4 h-4' />
+            </button>
+          )}
+
+          {/* 进入收藏夹按钮 */}
+          <button
+            onClick={onClick}
+            className='flex items-center space-x-1 px-3 py-1 text-sm text-blue-600 
+            hover:bg-blue-50 rounded-md transition-colors'
+          >
+            <span>{favorite.files.length}个内容</span>
+            <ChevronRightIcon className='w-4 h-4' />
+          </button>
+        </div>
       </div>
 
       {/* 收藏夹文件预览 */}

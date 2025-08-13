@@ -1,4 +1,5 @@
 import { CreateFavoriteModal } from '@/components/favorite/CreateFavoriteModal'
+import { UpdateFavoriteModal } from '@/components/favorite/UpdateFavoriteModal'
 import { FavoriteHeader } from '@/components/favorite/FavoriteHeader'
 import { FavoriteItem } from '@/components/favorite/FavoriteItem'
 import { YuzuLoading } from '@/components/yuzu/Loading'
@@ -6,6 +7,7 @@ import { ROUTES } from '@/constants/routes'
 import { useFavoriteData } from '@/hooks/favorite/useFavoriteData'
 import { useFavoriteSelection } from '@/hooks/favorite/useFavoriteSelection'
 import { FileInfo } from '@/types/files'
+import { FavoriteDto } from '@/types/favorite'
 import { toast } from '@/utils/toast'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -13,8 +15,10 @@ import { useNavigate } from 'react-router-dom'
 export const FavoritePage: React.FC = () => {
   const navigate = useNavigate()
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [showUpdateModal, setShowUpdateModal] = useState(false)
+  const [selectedFavorite, setSelectedFavorite] = useState<FavoriteDto | null>(null)
 
-  const { favorites, loading, createFavorite, loadFavorites } = useFavoriteData()
+  const { favorites, loading, createFavorite, updateFavorite, loadFavorites } = useFavoriteData()
   const {
     selectedFavoriteIds,
     hasSelection,
@@ -30,6 +34,21 @@ export const FavoritePage: React.FC = () => {
     if (success) {
       setShowCreateModal(false)
     }
+  }
+
+  async function handleUpdateFavorite(name: string, sortOrder: number) {
+    if (!selectedFavorite) return
+
+    const success = await updateFavorite(selectedFavorite.id, { name, sortOrder })
+    if (success) {
+      setShowUpdateModal(false)
+      setSelectedFavorite(null)
+    }
+  }
+
+  function handleEditFavorite(favorite: FavoriteDto) {
+    setSelectedFavorite(favorite)
+    setShowUpdateModal(true)
   }
 
   async function handleDeleteSelected() {
@@ -142,6 +161,7 @@ export const FavoritePage: React.FC = () => {
                 favorite={favorite}
                 isSelected={selectedFavoriteIds.has(favorite.id)}
                 onToggleSelection={() => toggleFavoriteSelection(favorite.id)}
+                onEdit={() => handleEditFavorite(favorite)}
                 onClick={() => {
                   // TODO: 实现收藏夹详情页面
                   toast.show('功能尚未实现')
@@ -158,6 +178,17 @@ export const FavoritePage: React.FC = () => {
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onConfirm={handleCreateFavorite}
+      />
+
+      {/* 更新收藏夹模态框 */}
+      <UpdateFavoriteModal
+        isOpen={showUpdateModal}
+        onClose={() => {
+          setShowUpdateModal(false)
+          setSelectedFavorite(null)
+        }}
+        onConfirm={handleUpdateFavorite}
+        favorite={selectedFavorite}
       />
     </div>
   )

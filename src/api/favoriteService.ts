@@ -1,5 +1,9 @@
 import { FavoriteDto, FavoriteFileDto } from '@/types/favorite'
-import { AddFileToFavoriteRequest, CreateFavoriteRequest } from '@/types/request/favorites'
+import {
+  AddFileToFavoriteRequest,
+  CreateFavoriteRequest,
+  UpdateFavoriteRequest,
+} from '@/types/request/favorites'
 import { invoke } from '@tauri-apps/api/core'
 
 class FavoriteService {
@@ -28,6 +32,13 @@ class FavoriteService {
 
   async deleteFavoriteFile(id: number): Promise<boolean> {
     return await invoke<boolean>('delete_favorite_file', { id })
+  }
+
+  async updateFavorite(id: number, request: UpdateFavoriteRequest): Promise<FavoriteDto> {
+    return await invoke<FavoriteDto>('update_favorite', {
+      id,
+      request,
+    })
   }
 }
 

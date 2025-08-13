@@ -1,6 +1,6 @@
 import { favoriteService } from '@/api/favoriteService'
 import { useFavoriteStore } from '@/stores/favoriteStore'
-import { CreateFavoriteRequest } from '@/types/request/favorites'
+import { CreateFavoriteRequest, UpdateFavoriteRequest } from '@/types/request/favorites'
 import { toast } from '@/utils/toast'
 import { useCallback, useEffect } from 'react'
 
@@ -35,9 +35,21 @@ export const useFavoriteData = () => {
     }
   }
 
+  const updateFavorite = async (id: number, request: UpdateFavoriteRequest) => {
+    try {
+      await favoriteService.updateFavorite(id, request)
+      toast.success('更新收藏夹成功')
+      loadFavorites()
+      return true
+    } catch (error) {
+      toast.handleApiError(error, '更新收藏夹失败')
+      return false
+    }
+  }
+
   useEffect(() => {
     loadFavorites()
   }, [loadFavorites])
 
-  return { favorites, loading, loadFavorites, createFavorite }
+  return { favorites, loading, loadFavorites, createFavorite, updateFavorite }
 }

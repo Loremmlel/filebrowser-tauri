@@ -13,3 +13,8 @@ export interface CreateFavoriteRequest {
   name: string
   sortOrder: number
 }
+
+export interface UpdateFavoriteRequest {
+  name?: string
+  sortOrder?: number
+}

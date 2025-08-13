@@ -1,17 +1,16 @@
 use tauri::{AppHandle, Emitter};
 
 use crate::commands::config::init_database;
-use crate::commands::favorites::update_favorite;
-use crate::commands::transcode::{start_transcode, stop_transcode};
 use crate::commands::{
     config::{get_app_config, set_app_config},
     favorites::{
         add_file_to_favorite, create_favorite, delete_favorite, delete_favorite_file,
-        get_all_favorite_files, get_favorites,
+        get_all_favorite_files, get_favorites, update_favorite,
     },
     files::{delete_file, download_file, get_files},
     os::get_platform,
     thumbnail::{clear_thumbnail_cache, get_thumbnail, get_thumbnail_status},
+    transcode::{start_transcode, stop_transcode},
 };
 
 mod commands;
