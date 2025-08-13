@@ -23,10 +23,14 @@ impl Database {
         let pool = SqlitePool::connect(database_url)
             .await
             .map_err(|e| ApiError::new(500, e.to_string()))?;
-        sqlx::migrate!("./migrations")
+
+        // 默认在包含cargo.toml的目录下的 migrations 文件夹里，但如果指定./migrations，就会发现不行！
+        // 我想是db文件和可执行文件不在同一目录下导致的
+        sqlx::migrate!()
             .run(&pool)
             .await
-            .map_err(|e| ApiError::new(500, e.to_string()))?;
+            .map_err(|e| ApiError::new(500, format!("迁移执行失败: {}", e)))?;
+
         DB_POOL
             .set(pool)
             .map_err(|_| ApiError::new(500, "设置数据库连接池失败".to_string()))?;
