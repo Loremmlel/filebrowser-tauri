@@ -32,7 +32,7 @@ pub fn run() {
             tauri::async_runtime::spawn(async move {
                 match init_database(&app_handle).await {
                     Ok(_) => println!("sqlite数据库初始化成功"),
-                    Err(e) => eprintln!("sqlite数据库初始化失败: {}", e),
+                    Err(e) => eprintln!("sqlite数据库初始化失败: {}", e.message),
                 };
             });
             Ok(())

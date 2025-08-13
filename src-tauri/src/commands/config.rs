@@ -73,7 +73,9 @@ pub async fn init_database(app: &AppHandle) -> Result<(), ApiError> {
         }
     };
 
-    let database_url = format!("sqlite:{}", db_path.to_str().unwrap_or_default());
+    // sqlx不会自己创建db文件，需要指定mode含create
+    let database_url = format!("sqlite:{}?mode=rwc", db_path.to_str().unwrap_or_default());
+    println!("数据库路径: {}", database_url);
     if database_url == "sqlite:" {
         return Err(ApiError::new(500, "数据库路径无效".to_string()));
     }
