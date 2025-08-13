@@ -139,12 +139,6 @@ pub async fn api_post_success<R: Serialize>(
     Ok(response.status().is_success())
 }
 
-/// DELETE 请求
-pub async fn api_delete(server_url: &str, endpoint: &str) -> Result<(), ApiError> {
-    send_request(Method::DELETE, server_url, endpoint).await?;
-    Ok(())
-}
-
 /// DELETE 请求并返回是否成功
 pub async fn api_delete_success(server_url: &str, endpoint: &str) -> Result<bool, ApiError> {
     let response = send_request(Method::DELETE, server_url, endpoint).await?;
