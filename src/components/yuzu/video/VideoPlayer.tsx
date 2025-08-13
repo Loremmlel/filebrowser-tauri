@@ -113,7 +113,7 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
         transcodeResult.status === TranscodeState.Processing ||
         transcodeResult.status === TranscodeState.Completed
       ) {
-        const playlistUrl = `${serverUrl}/video/${transcodeResult.id}/playlist.m3u8`
+        const playlistUrl = `${serverUrl}${transcodeResult.outputPath}`
 
         if (!initializeHls(playlistUrl, true)) {
           // Safari原生支持HLS的fallback
