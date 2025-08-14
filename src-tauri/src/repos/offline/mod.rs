@@ -7,6 +7,7 @@ use crate::{commands::config::with_config, models::error::ApiError};
 pub mod offline_favorites_repo;
 pub mod offline_files_repo;
 pub mod offline_thumbnails_repo;
+pub mod offline_transcode_repo;
 
 pub trait OfflineRepo {
     fn get_base_dir() -> String {

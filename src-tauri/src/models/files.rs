@@ -12,7 +12,7 @@ pub struct FileInfo {
     pub path: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub enum FileType {
     Folder,
     Image,

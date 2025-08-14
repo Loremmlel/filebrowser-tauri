@@ -44,4 +44,5 @@ sqlx = { version = "0.8", features = [
 image = "0.25"
 rand = "0.9"
 pathdiff = "0.2"
-uuid = "1"
+uuid = { version = "1", features = ["v4"] }
+regex = "1"

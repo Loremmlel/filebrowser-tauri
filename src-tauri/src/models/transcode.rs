@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct TranscodeStatus {
     pub id: String,
@@ -10,10 +10,10 @@ pub struct TranscodeStatus {
     pub error: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum TranscodeState {
     Pending,
-    Process,
+    Processing,
     Completed,
     Error,
 }
