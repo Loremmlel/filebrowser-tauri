@@ -1,8 +1,8 @@
 import { useCallback, useEffect } from 'react'
 import { TranscodeStatus } from '@/types/transcode.ts'
 import { listen, UnlistenFn } from '@tauri-apps/api/event'
-import { invoke } from '@tauri-apps/api/core'
 import { useTranscodeStore } from '@/stores/transcodeStore'
+import { transcodeService } from '@/api/transcodeService'
 
 export const useTranscodeStatus = () => {
   const { status, isLoading, error, setIsLoading, setStatus, clearStatus, setError } =
@@ -32,7 +32,7 @@ export const useTranscodeStatus = () => {
       try {
         setIsLoading(true)
         setError(null)
-        const result = await invoke<TranscodeStatus>('start_transcode', { path })
+        const result = await transcodeService.startTranscode(path)
         setStatus(result)
         return result
       } catch (err) {
@@ -51,7 +51,7 @@ export const useTranscodeStatus = () => {
 
     try {
       setIsLoading(true)
-      await invoke('stop_transcode', { id: status.id })
+      await transcodeService.stopTranscode(status.id)
       setStatus(null)
       setError(null)
     } catch (err) {
