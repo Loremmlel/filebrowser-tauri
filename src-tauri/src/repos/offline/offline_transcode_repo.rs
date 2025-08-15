@@ -2,6 +2,7 @@ use std::{
     path::{Path, PathBuf},
     time::Duration,
 };
+use once_cell::sync::Lazy;
 use tauri::{AppHandle, Emitter};
 use tokio::{
     fs,
@@ -23,6 +24,9 @@ use crate::{
 
 static CURRENT_TASK: Mutex<Option<TranscodeTask>> = Mutex::const_new(None);
 static APP_HANDLE: Mutex<Option<AppHandle>> = Mutex::const_new(None);
+
+static DURATION_REGEX: Lazy<regex::Regex> = Lazy::new(|| regex::Regex::new(r"Duration: (\d+):(\d+):(\d+\.\d+)").unwrap());
+static TIME_REGEX: Lazy<regex::Regex> = Lazy::new(|| regex::Regex::new(r"time=(\d+):(\d+):(\d+\.\d+)").unwrap());
 
 pub struct OfflineTranscodeRepo;
 
@@ -234,7 +238,7 @@ impl OfflineTranscodeRepo {
 
         while let Ok(Some(line)) = lines.next_line().await {
             // 解析时长
-            if let Some(captures) = Self::duration_regex().captures(&line) {
+            if let Some(captures) = DURATION_REGEX.captures(&line) {
                 if let (Ok(h), Ok(m), Ok(s)) = (
                     captures[1].parse::<f64>(),
                     captures[2].parse::<f64>(),
@@ -245,7 +249,7 @@ impl OfflineTranscodeRepo {
             }
 
             // 解析当前时间并计算进度
-            if let Some(captures) = Self::time_regex().captures(&line) {
+            if let Some(captures) = TIME_REGEX.captures(&line) {
                 if duration > 0.0 {
                     if let (Ok(h), Ok(m), Ok(s)) = (
                         captures[1].parse::<f64>(),
@@ -285,19 +289,6 @@ impl OfflineTranscodeRepo {
         }
 
         Err(ApiError::new(500, "等待第一个分段文件超时".to_string()))
-    }
-
-    fn duration_regex() -> &'static regex::Regex {
-        use std::sync::OnceLock;
-        static DURATION_REGEX: OnceLock<regex::Regex> = OnceLock::new();
-        DURATION_REGEX
-            .get_or_init(|| regex::Regex::new(r"Duration: (\d+):(\d+):(\d+\.\d+)").unwrap())
-    }
-
-    fn time_regex() -> &'static regex::Regex {
-        use std::sync::OnceLock;
-        static TIME_REGEX: OnceLock<regex::Regex> = OnceLock::new();
-        TIME_REGEX.get_or_init(|| regex::Regex::new(r"time=(\d+):(\d+):(\d+\.\d+)").unwrap())
     }
 }
 
