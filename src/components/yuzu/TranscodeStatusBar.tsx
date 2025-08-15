@@ -28,7 +28,7 @@ export const YuzuTranscodeStatusBar: React.FC<YuzuTranscodeStatusBarProps> = ({
     )
   }
 
-  if (status) {
+  if (status && status.progress <= 0.99) {
     const percentage = Math.round(status.progress * 100)
     const isCompleted = status.progress >= 0.98
 

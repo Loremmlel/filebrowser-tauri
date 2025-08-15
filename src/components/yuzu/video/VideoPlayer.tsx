@@ -68,7 +68,6 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
                 const url = new URL(sourceUrl)
                 const fullPath = decodeURIComponent(url.pathname)
                 const parts = fullPath.replace(/^\/+|\/+$/g, '').split('/')
-                console.log('处理TS片段加载', parts, tsFragmentName)
                 const dirPath = parts.slice(0, -1).join('/')
                 context.url = convertFileSrc(`${dirPath}/${tsFragmentName}`)
               }
@@ -178,8 +177,7 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
   // 组件卸载时清理转码状态
   useEffect(() => {
     return () => {
-      stopTranscode()
-      clearTranscodeStatus()
+      stopTranscode().then(() => clearTranscodeStatus())
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

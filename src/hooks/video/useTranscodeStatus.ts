@@ -47,11 +47,13 @@ export const useTranscodeStatus = () => {
   )
 
   const stopTranscode = async () => {
-    if (!status?.id) return
+    // 沟槽的闭包陷阱
+    const currentStatus = useTranscodeStore.getState().status
+    if (!currentStatus?.id) return
 
     try {
       setIsLoading(true)
-      await transcodeService.stopTranscode(status.id)
+      await transcodeService.stopTranscode(currentStatus.id)
       setStatus(null)
       setError(null)
     } catch (err) {

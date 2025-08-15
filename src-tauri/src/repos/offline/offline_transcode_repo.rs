@@ -98,6 +98,7 @@ impl Repo for OfflineTranscodeRepo {
             if task.id == id {
                 if let Some(mut process) = task.process {
                     let _ = process.kill().await;
+                    *current_task = None;
                 }
 
                 if let Err(e) = fs::remove_dir_all(&task.output_dir).await {
