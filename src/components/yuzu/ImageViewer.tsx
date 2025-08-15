@@ -6,8 +6,9 @@ import {
   ChevronRightIcon,
   XMarkIcon,
 } from '@heroicons/react/24/solid'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { YuzuLoading } from './Loading'
+import { convertFileSrc } from '@tauri-apps/api/core'
 
 interface YuzuImageViewerProps {
   file: FileInfo
@@ -24,11 +25,17 @@ export const YuzuImageViewer: React.FC<YuzuImageViewerProps> = ({
   onPrev,
   onDownload,
 }) => {
-  const { serverUrl } = useConfigStore()
+  const { online, serverUrl, baseDir } = useConfigStore()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const imageUrl = `${serverUrl}/image?path=${encodeURIComponent(file.path)}`
+  const imageUrl = useMemo(
+    () =>
+      online
+        ? `${serverUrl}/image?path=${encodeURIComponent(file.path)}`
+        : convertFileSrc(`${baseDir}${file.path}`),
+    [baseDir, file.path, online, serverUrl]
+  )
 
   function handleImageLoad() {
     setLoading(false)
