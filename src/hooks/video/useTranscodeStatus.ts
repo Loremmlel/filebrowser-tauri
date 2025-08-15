@@ -47,7 +47,8 @@ export const useTranscodeStatus = () => {
   )
 
   const stopTranscode = async () => {
-    // 沟槽的闭包陷阱
+    // React的反直觉行为：即使useCallback依赖了status，有时还是会有时序问题
+    // 所以直接从store获取最新状态比较保险 🤷‍♂️
     const currentStatus = useTranscodeStore.getState().status
     if (!currentStatus?.id) return
 
