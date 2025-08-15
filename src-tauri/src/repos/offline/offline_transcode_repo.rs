@@ -1,6 +1,5 @@
 use std::{
     path::{Path, PathBuf},
-    sync::atomic::{AtomicBool, Ordering},
     time::Duration,
 };
 use tauri::{AppHandle, Emitter};
