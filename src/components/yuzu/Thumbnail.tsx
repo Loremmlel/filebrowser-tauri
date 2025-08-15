@@ -27,7 +27,7 @@ export const YuzuThumbnail: React.FC<YuzuThumbnailProps> = ({ file, className })
         setLoading(true)
         setError(false)
         const thumbnailData = await fileService.getThumbnail(file.path)
-        const blob = new Blob([thumbnailData.buffer as ArrayBuffer], { type: 'image/png' })
+        const blob = new Blob([thumbnailData.buffer as ArrayBuffer])
         const url = URL.createObjectURL(blob)
         currentUrl = url
         setThumbnailUrl(url)

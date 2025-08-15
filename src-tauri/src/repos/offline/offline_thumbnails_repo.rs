@@ -77,7 +77,7 @@ impl ThumbnailsRepo for OfflineThumbnailsRepo {
 
         let mut buf = Cursor::new(Vec::new());
         thumbnail
-            .write_to(&mut buf, image::ImageFormat::Png)
+            .write_to(&mut buf, image::ImageFormat::WebP)
             .map_err(|e| ApiError::new(500, format!("写入缩略图失败: {}", e)))?;
 
         Ok(buf.into_inner())
