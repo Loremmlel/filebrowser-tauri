@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import Hls from 'hls.js'
+import Hls, { LoaderCallbacks, LoaderConfiguration, LoaderContext } from 'hls.js'
 import { useConfigStore } from '@/stores/configStore'
 import { useTranscodeStatus } from '@/hooks/video/useTranscodeStatus'
 import { YuzuVideoControlOverlay } from './VideoControlOverlay'
@@ -56,6 +56,26 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
           maxBufferLength: 600,
           autoStartLoad: true,
           maxBufferHole: 1,
+
+          loader: class extends Hls.DefaultConfig.loader {
+            load(
+              context: LoaderContext,
+              config: LoaderConfiguration,
+              callbacks: LoaderCallbacks<LoaderContext>
+            ) {
+              if (context.url.endsWith('.ts')) {
+                const tsFragmentName = context.url.split('/').pop()
+                const url = new URL(sourceUrl)
+                const fullPath = decodeURIComponent(url.pathname)
+                const parts = fullPath.replace(/^\/+|\/+$/g, '').split('/')
+                console.log('处理TS片段加载', parts, tsFragmentName)
+                const dirPath = parts.slice(0, -1).join('/')
+                context.url = convertFileSrc(`${dirPath}/${tsFragmentName}`)
+              }
+              console.log('正在加载视频地址', context.url)
+              super.load(context, config, callbacks)
+            }
+          },
         })
 
         hlsRef.current = hls
