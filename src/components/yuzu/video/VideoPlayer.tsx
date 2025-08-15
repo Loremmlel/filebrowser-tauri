@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Hls from 'hls.js'
 import { useConfigStore } from '@/stores/configStore'
 import { useTranscodeStatus } from '@/hooks/video/useTranscodeStatus'
@@ -15,7 +15,7 @@ interface YuzuVideoPlayerProps {
 }
 
 export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportHevc, onClose }) => {
-  const { serverUrl } = useConfigStore()
+  const { online, serverUrl, baseDir } = useConfigStore()
   const { startTranscode, stopTranscode, clearStatus: clearTranscodeStatus } = useTranscodeStatus()
 
   const videoRef = useRef<HTMLVideoElement | null>(null)
@@ -27,6 +27,12 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
   const [isFullscreen, setIsFullscreen] = useState(false)
 
   const title = path.split('/').pop() ?? 'Video'
+
+  const directVideoUrl = useMemo(
+    () =>
+      online ? `${serverUrl}/video?path=${encodeURIComponent(path)}` : `file://${baseDir}${path}`,
+    [serverUrl, path, baseDir, online]
+  )
 
   const cleanupHls = useCallback(() => {
     if (hlsRef.current) {
@@ -85,11 +91,8 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
     },
     [cleanupHls]
   )
-
   // 设置直接播放（支持HEVC）
   const setupDirectPlay = useCallback(() => {
-    const directVideoUrl = `${serverUrl}/direct-video?path=${encodeURIComponent(path)}`
-
     if (!initializeHls(directVideoUrl, false)) {
       // 如果不支持 HLS.js，直接使用原生播放
       if (videoRef.current) {
@@ -98,7 +101,7 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
     }
 
     setIsLoading(false)
-  }, [serverUrl, path, initializeHls])
+  }, [initializeHls, directVideoUrl])
 
   // 设置HLS播放（需要转码）
   const setupHlsPlay = useCallback(async () => {
@@ -113,7 +116,9 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
         transcodeResult.status === TranscodeState.Processing ||
         transcodeResult.status === TranscodeState.Completed
       ) {
-        const playlistUrl = `${serverUrl}${transcodeResult.outputPath}`
+        const playlistUrl = online
+          ? `${serverUrl}${transcodeResult.outputPath}`
+          : `file://${transcodeResult.outputPath}`
 
         if (!initializeHls(playlistUrl, true)) {
           // Safari原生支持HLS的fallback
@@ -131,7 +136,7 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
       setError(err instanceof Error ? err.message : '启动转码失败')
       setIsLoading(false)
     }
-  }, [serverUrl, path, startTranscode, initializeHls])
+  }, [startTranscode, path, online, serverUrl, initializeHls])
 
   // 初始化视频播放
   useEffect(() => {

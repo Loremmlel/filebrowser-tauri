@@ -55,7 +55,7 @@ impl Repo for OfflineTranscodeRepo {
             id: id.clone(),
             status: TranscodeState::Pending,
             progress: 0.0,
-            output_path: Some(format!("/video/{}/playlist.m3u8", id)),
+            output_path: Some(format!("{}/playlist.m3u8", output_dir.display())),
             error: None,
         };
 
