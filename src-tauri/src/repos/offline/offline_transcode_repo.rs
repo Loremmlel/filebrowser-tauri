@@ -1,6 +1,7 @@
 use std::{
     path::{Path, PathBuf},
     sync::atomic::{AtomicBool, Ordering},
+    time::Duration,
 };
 use tauri::{AppHandle, Emitter};
 use tokio::{
@@ -8,6 +9,7 @@ use tokio::{
     io::{AsyncBufReadExt, BufReader},
     process::Child,
     sync::Mutex,
+    time::sleep,
 };
 use uuid::Uuid;
 
@@ -20,7 +22,6 @@ use crate::{
     repos::{offline::OfflineRepo, Repo},
 };
 
-static TRANSCODE_ACTIVE: AtomicBool = AtomicBool::new(false);
 static CURRENT_TASK: Mutex<Option<TranscodeTask>> = Mutex::const_new(None);
 static APP_HANDLE: Mutex<Option<AppHandle>> = Mutex::const_new(None);
 
@@ -36,17 +37,11 @@ impl Repo for OfflineTranscodeRepo {
     type UpdateRequest = ();
 
     async fn create(data: Self::CreateRequest) -> Result<Self::Item, ApiError> {
-        if TRANSCODE_ACTIVE.load(Ordering::Relaxed) {
-            return Err(ApiError::new(400, "有转码任务正在进行中".to_string()));
-        }
-        let path_string = format!("{}/{}", Self::get_base_dir(), data);
+        let file_path_string = format!("{}/{}", Self::get_base_dir(), data);
+        let file_path = Path::new(&file_path_string);
 
-        let path = Path::new(&path_string);
-        if !path.exists() {
-            return Err(ApiError::new(404, "文件不存在".to_string()));
-        }
-        if path.to_file_type() != FileType::Video {
-            return Err(ApiError::new(400, "只能转码视频文件".to_string()));
+        if file_path.to_file_type() != FileType::Video {
+            return Err(ApiError::new(400, "文件不是视频格式".to_string()));
         }
 
         let id = Uuid::new_v4().to_string();
@@ -55,9 +50,9 @@ impl Repo for OfflineTranscodeRepo {
 
         fs::create_dir_all(&output_dir)
             .await
-            .map_err(|e| ApiError::new(500, format!("创建输出目录失败: {}", e)))?;
+            .map_err(|e| ApiError::new(500, format!("无法创建输出目录: {}", e)))?;
 
-        let status = TranscodeStatus {
+        let mut status = TranscodeStatus {
             id: id.clone(),
             status: TranscodeState::Pending,
             progress: 0.0,
@@ -65,7 +60,10 @@ impl Repo for OfflineTranscodeRepo {
             error: None,
         };
 
-        TRANSCODE_ACTIVE.store(true, Ordering::Relaxed);
+        let mut current_task = CURRENT_TASK.lock().await;
+        if current_task.is_some() {
+            return Err(ApiError::new(409, "已有转码任务正在进行".to_string()));
+        }
 
         let task = TranscodeTask {
             id: id.clone(),
@@ -73,64 +71,42 @@ impl Repo for OfflineTranscodeRepo {
             process: None,
             output_dir: output_dir.clone(),
         };
-
-        {
-            let mut task_lock = CURRENT_TASK.lock().await;
-            *task_lock = Some(task);
-        }
+        *current_task = Some(task);
+        drop(current_task);
 
         tokio::spawn(async move {
-            if let Err(e) = Self::execute_transcode(path_string.clone(), id.clone()).await {
-                // 发送错误状态
+            if let Err(e) = Self::execute_transcode(file_path_string, id).await {
                 if let Some(app) = APP_HANDLE.lock().await.as_ref() {
-                    let error_status = TranscodeStatus {
-                        id: id.clone(),
-                        status: TranscodeState::Error,
-                        progress: 0.0,
-                        output_path: None,
-                        error: Some(e.to_string()),
-                    };
-                    let _ = app.emit("transcode-status-update", &error_status);
+                    let _ = app.emit("transcode-error", format!("转码任务失败: {}", e));
                 }
-                TRANSCODE_ACTIVE.store(false, Ordering::Relaxed);
-                let mut task_guard = CURRENT_TASK.lock().await;
-                *task_guard = None;
             }
         });
-
+        Self::wait_for_first_segment(&output_dir).await?;
+        status.status = TranscodeState::Completed;
         Ok(status)
     }
 
-    async fn get(id: Self::Id) -> Result<Self::Item, ApiError> {
-        let task_guard = CURRENT_TASK.lock().await;
-        if let Some(task) = task_guard.as_ref() {
-            if task.id == id {
-                return Ok(task.status.clone());
-            }
-        }
-        Err(ApiError::new(400, "转码任务不存在".to_string()))
-    }
-
     async fn delete(id: Self::Id) -> Result<bool, ApiError> {
-        let mut task_lock = CURRENT_TASK.lock().await;
-        if let Some(task) = task_lock.take() {
+        let mut current_task = CURRENT_TASK.lock().await;
+
+        if let Some(task) = current_task.take() {
             if task.id == id {
-                // 停止进程
                 if let Some(mut process) = task.process {
                     let _ = process.kill().await;
                 }
 
-                // 清理输出目录
-                let _ = fs::remove_dir_all(&task.output_dir).await;
+                if let Err(e) = fs::remove_dir_all(&task.output_dir).await {
+                    eprintln!("无法删除输出目录: {}", e);
+                }
 
-                TRANSCODE_ACTIVE.store(false, Ordering::Relaxed);
-                return Ok(true);
+                Ok(true)
             } else {
-                // 如果 ID 不匹配，把任务放回去
-                *task_lock = Some(task);
+                *current_task = Some(task);
+                Err(ApiError::new(404, "没有找到对应的转码任务".to_string()))
             }
+        } else {
+            Err(ApiError::new(404, "没有找到对应的转码任务".to_string()))
         }
-        Err(ApiError::new(400, "转码任务不存在".to_string()))
     }
 }
 
@@ -155,14 +131,12 @@ impl OfflineTranscodeRepo {
     }
 
     async fn execute_transcode(file_path: String, id: String) -> Result<(), ApiError> {
+        let hwaccel_config = Self::detect_hardware_acceleration().await;
         let cache_dir = Self::get_cache_dir();
         let output_dir = cache_dir.join(&id);
         let playlist_file = output_dir.join("playlist.m3u8");
 
-        let hwaccel_config = Self::detect_hardware_acceleration().await;
-
         let mut command = tokio::process::Command::new("ffmpeg");
-        command.arg("-y");
 
         if let Some(hwaccel) = &hwaccel_config.hwaccel {
             command.args(["-hwaccel", hwaccel]);
@@ -170,67 +144,94 @@ impl OfflineTranscodeRepo {
         if let Some(hwaccel_output_format) = &hwaccel_config.hwaccel_output_format {
             command.args(["-hwaccel_output_format", hwaccel_output_format]);
         }
-
-        command
-            .args(["-i", &file_path])
-            .args(["-c:v", &hwaccel_config.encoder])
-            .args(["-preset", &hwaccel_config.preset]);
-
+        command.args(["-i", &file_path]);
+        command.args(["-c:v", &hwaccel_config.encoder]);
+        command.args(["-preset", &hwaccel_config.preset]);
         for arg in &hwaccel_config.extra_args {
             command.arg(arg);
         }
 
-        command
-            .args(["-c:a", "copy"])
-            .args(["-f", "hls"])
-            .args(["-g", "90"])
-            .args(["-hls_time", "9"])
-            .args(["-hls_list_size", "0"])
-            .args(["-hls_flags", "append_list+temp_file"])
-            .args([
-                "-hls_segment_filename",
-                &format!("{}/segment%04d.ts", output_dir.display()),
-            ])
-            .arg(playlist_file.to_string_lossy().to_string())
-            .stdout(std::process::Stdio::piped())
-            .stderr(std::process::Stdio::piped());
+        command.args([
+            "-c:a",
+            "copy",
+            "-f",
+            "hls",
+            "-g",
+            "90",
+            "-hls_time",
+            "9",
+            "-hls_list_size",
+            "0",
+            "-hls_flags",
+            "append_list+temp_file",
+            "-hls_segment_filename",
+            &format!("{}/segment%04d.ts", output_dir.display()),
+        ]);
+        command.arg(&playlist_file.to_string_lossy().into_owned());
 
-        let mut process = command
+        let child = command
+            .stderr(std::process::Stdio::piped())
             .spawn()
-            .map_err(|e| ApiError::new(500, format!("启动转码进程失败: {}", e)))?;
+            .map_err(|e| ApiError::new(500, format!("无法启动转码进程: {}", e)))?;
 
         {
-            let mut task_lock = CURRENT_TASK.lock().await;
-            if let Some(task) = task_lock.as_mut() {
-                task.process = Some(process);
+            let mut current_task = CURRENT_TASK.lock().await;
+            if let Some(task) = current_task.as_mut() {
+                task.process = Some(child);
                 task.status.status = TranscodeState::Processing;
-
-                if let Some(app) = APP_HANDLE.lock().await.as_ref() {
-                    let _ = app.emit("transcode-status", &task.status);
-                }
-            } else {
-                return Err(ApiError::new(500, "转码任务已被删除".to_string()));
             }
         }
 
-        // 重新获取进程句柄以监控
-        process = {
-            let mut task_lock = CURRENT_TASK.lock().await;
-            if let Some(task) = task_lock.as_mut() {
-                task.process.take().unwrap()
-            } else {
-                return Err(ApiError::new(500, "转码任务已被删除".to_string()));
-            }
+        Self::monitor_transcode(&id).await;
+
+        let mut current_task = CURRENT_TASK.lock().await;
+        let Some(mut process) = current_task.as_mut().and_then(|t| t.process.take()) else {
+            return Err(ApiError::new(500, "转码任务未找到".to_string()));
         };
+        let exit_status = process
+            .wait()
+            .await
+            .map_err(|e| ApiError::new(500, format!("转码进程等待失败: {}", e)))?;
+        if let Some(task) = current_task.as_mut() {
+            if exit_status.success() {
+                task.status.status = TranscodeState::Completed;
+                task.status.progress = 1.0;
+            } else {
+                task.status.status = TranscodeState::Error;
+                task.status.error =
+                    Some(format!("ffmpeg进程退出，状态码: {:?}", exit_status.code()));
+            }
 
-        let stderr = process.stderr.take().unwrap();
+            if let Some(app) = APP_HANDLE.lock().await.as_ref() {
+                let _ = app.emit("transcode-status", &task.status);
+            }
+        }
+
+        if exit_status.success() {
+            Ok(())
+        } else {
+            Err(ApiError::new(
+                500,
+                format!("转码进程异常退出，状态码: {:?}", exit_status.code()),
+            ))
+        }
+    }
+
+    async fn monitor_transcode(task_id: &str) {
+        let mut current_task = CURRENT_TASK.lock().await;
+        let current_task_ref = current_task.as_mut().expect("当前任务应该存在");
+        let Some(process) = current_task_ref.process.as_mut() else {
+            eprintln!("转码进程未找到或未启动");
+            return;
+        };
+        let stderr = process.stderr.as_mut().expect("stderr应该设置管道");
         let reader = BufReader::new(stderr);
-        let mut lines = reader.lines();
 
+        let mut lines = reader.lines();
         let mut duration = 0.0;
 
         while let Ok(Some(line)) = lines.next_line().await {
-            // 解析持续时间
+            // 解析时长
             if let Some(captures) = Self::duration_regex().captures(&line) {
                 if let (Ok(h), Ok(m), Ok(s)) = (
                     captures[1].parse::<f64>(),
@@ -241,7 +242,7 @@ impl OfflineTranscodeRepo {
                 }
             }
 
-            // 解析当前时间
+            // 解析当前时间并计算进度
             if let Some(captures) = Self::time_regex().captures(&line) {
                 if duration > 0.0 {
                     if let (Ok(h), Ok(m), Ok(s)) = (
@@ -250,67 +251,33 @@ impl OfflineTranscodeRepo {
                         captures[3].parse::<f64>(),
                     ) {
                         let current_time = h * 3600.0 + m * 60.0 + s;
-                        let progress = (current_time / duration).min(0.99);
+                        let progress = current_time / duration;
 
-                        // 更新全局状态并发送事件
-                        {
-                            let mut task_lock = CURRENT_TASK.lock().await;
-                            if let Some(task) = task_lock.as_mut() {
-                                task.status.progress = progress;
+                        if current_task_ref.id == task_id {
+                            current_task_ref.status.progress = progress;
 
-                                if let Some(app) = APP_HANDLE.lock().await.as_ref() {
-                                    let _ = app.emit("transcode-status-update", &task.status);
-                                }
+                            if let Some(app) = APP_HANDLE.lock().await.as_ref() {
+                                let _ = app.emit("transcode-status", &current_task_ref.status);
                             }
                         }
                     }
                 }
             }
         }
+    }
 
-        let exit_status = process.wait().await;
+    async fn wait_for_first_segment(output_dir: &Path) -> Result<(), ApiError> {
+        let playlist_file = output_dir.join("playlist.m3u8");
+        let first_segment = output_dir.join("segment0000.ts");
 
-        // 处理结果并发送最终状态
-        let final_status = match exit_status {
-            Ok(status_code) if status_code.success() => TranscodeStatus {
-                id: id.clone(),
-                status: TranscodeState::Completed,
-                progress: 1.0,
-                output_path: Some(format!("/video/{}/playlist.m3u8", id)),
-                error: None,
-            },
-            Ok(status_code) => TranscodeStatus {
-                id: id.clone(),
-                status: TranscodeState::Error,
-                progress: 0.0,
-                output_path: None,
-                error: Some(format!("FFmpeg 进程异常退出: {:?}", status_code)),
-            },
-            Err(e) => TranscodeStatus {
-                id: id.clone(),
-                status: TranscodeState::Error,
-                progress: 0.0,
-                output_path: None,
-                error: Some(format!("等待进程结束失败: {}", e)),
-            },
-        };
-
-        // 更新最终状态并发送事件
-        {
-            let mut task_guard = CURRENT_TASK.lock().await;
-            if let Some(task) = task_guard.as_mut() {
-                task.status = final_status.clone();
-
-                if let Some(app) = APP_HANDLE.lock().await.as_ref() {
-                    let _ = app.emit("transcode-status-update", &final_status);
-                }
+        for _ in 0..300 {
+            if playlist_file.exists() && first_segment.exists() {
+                return Ok(());
             }
+            sleep(Duration::from_millis(100)).await;
         }
 
-        // 清理全局状态
-        TRANSCODE_ACTIVE.store(false, Ordering::Relaxed);
-
-        Ok(())
+        Err(ApiError::new(500, "等待第一个分段文件超时".to_string()))
     }
 
     fn duration_regex() -> &'static regex::Regex {
