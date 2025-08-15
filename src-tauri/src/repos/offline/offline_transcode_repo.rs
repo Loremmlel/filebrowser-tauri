@@ -181,7 +181,7 @@ impl OfflineTranscodeRepo {
             }
         }
 
-        Self::monitor_transcode(&id).await;
+        Self::monitor_transcode().await;
 
         let mut current_task = CURRENT_TASK.lock().await;
         let Some(mut process) = current_task.as_mut().and_then(|t| t.process.take()) else {
@@ -216,16 +216,19 @@ impl OfflineTranscodeRepo {
         }
     }
 
-    async fn monitor_transcode(task_id: &str) {
-        let mut current_task = CURRENT_TASK.lock().await;
-        let current_task_ref = current_task.as_mut().expect("当前任务应该存在");
-        let Some(process) = current_task_ref.process.as_mut() else {
-            eprintln!("转码进程未找到或未启动");
-            return;
+    async fn monitor_transcode() {
+        let (stderr, task_id) = {
+            let mut current_task = CURRENT_TASK.lock().await;
+            let task = current_task.as_mut().expect("当前任务应该存在");
+            let stderr = task
+                .process
+                .as_mut()
+                .and_then(|p| p.stderr.take())
+                .expect("stderr应该设置管道");
+            (stderr, task.id.clone())
         };
-        let stderr = process.stderr.as_mut().expect("stderr应该设置管道");
-        let reader = BufReader::new(stderr);
 
+        let reader = BufReader::new(stderr);
         let mut lines = reader.lines();
         let mut duration = 0.0;
 
@@ -252,11 +255,16 @@ impl OfflineTranscodeRepo {
                         let current_time = h * 3600.0 + m * 60.0 + s;
                         let progress = current_time / duration;
 
-                        if current_task_ref.id == task_id {
-                            current_task_ref.status.progress = progress;
+                        let mut current_task = CURRENT_TASK.lock().await;
+                        if let Some(task) = current_task.as_mut() {
+                            if task.id == task_id {
+                                task.status.progress = progress;
+                                let status = task.status.clone();
+                                drop(current_task);
 
-                            if let Some(app) = APP_HANDLE.lock().await.as_ref() {
-                                let _ = app.emit("transcode-status", &current_task_ref.status);
+                                if let Some(app) = APP_HANDLE.lock().await.as_ref() {
+                                    let _ = app.emit("transcode-status", status);
+                                }
                             }
                         }
                     }
