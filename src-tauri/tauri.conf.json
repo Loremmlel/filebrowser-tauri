@@ -20,9 +20,15 @@
     ],
     "security": {
       "csp": {
-        "default-src": "'self' data: blob: http: https:",
-        "img-src": "'self' data: blob: http: https:",
-        "media-src": "'self' data: blob: http: https:"
+        "default-src": "'self' ipc: http://ipc.localhost data: blob: http: https:",
+        "img-src": "'self' asset: http://asset.localhost data: blob: http: https:",
+        "media-src": "'self' asset: http://asset.localhost data: blob: http: https:"
+      },
+      "assetProtocol": {
+        "enable": true,
+        "scope": [
+          "**"
+        ]
       }
     }
   },

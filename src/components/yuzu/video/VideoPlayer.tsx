@@ -7,6 +7,7 @@ import { YuzuTranscodeStatusBar } from '@/components/yuzu/TranscodeStatusBar'
 import { TranscodeState } from '@/types/transcode'
 import { YuzuLoading } from '@/components/yuzu/Loading'
 import { toast } from '@/utils/toast'
+import { convertFileSrc } from '@tauri-apps/api/core'
 
 interface YuzuVideoPlayerProps {
   path: string
@@ -30,7 +31,9 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
 
   const directVideoUrl = useMemo(
     () =>
-      online ? `${serverUrl}/video?path=${encodeURIComponent(path)}` : `file://${baseDir}${path}`,
+      online
+        ? `${serverUrl}/video?path=${encodeURIComponent(path)}`
+        : convertFileSrc(`${baseDir}${path}`),
     [serverUrl, path, baseDir, online]
   )
 
@@ -118,7 +121,7 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
       ) {
         const playlistUrl = online
           ? `${serverUrl}${transcodeResult.outputPath}`
-          : `file://${transcodeResult.outputPath}`
+          : convertFileSrc(transcodeResult.outputPath ?? '')
 
         if (!initializeHls(playlistUrl, true)) {
           // Safari原生支持HLS的fallback
