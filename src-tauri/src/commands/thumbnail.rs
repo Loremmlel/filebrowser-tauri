@@ -46,7 +46,7 @@ fn get_thumbnail_cache() -> &'static RwLock<ThumbnailCache> {
 // 发送缩略图状态更新事件
 async fn emit_thumbnail_status_update(app: &AppHandle) {
     if let Ok(status) = get_thumbnail_status_internal().await {
-        let _ = app.emit("thumbnail-status-update", &status);
+        let _ = app.emit("thumbnail-status", &status);
     }
 }
 

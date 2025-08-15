@@ -82,6 +82,6 @@ impl TranscodeRepo for OnlineTranscodeRepo {
 
 impl OnlineTranscodeRepo {
     async fn emit_pooling_status(status: &TranscodeStatus, app: &AppHandle) {
-        let _ = app.emit("transcode-status-update", status);
+        let _ = app.emit("transcode-status", status);
     }
 }

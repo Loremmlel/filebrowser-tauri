@@ -13,7 +13,7 @@ export const useTranscodeStatus = () => {
 
     const setupListener = async () => {
       try {
-        unlisten = await listen<TranscodeStatus>('transcode-status-update', event => {
+        unlisten = await listen<TranscodeStatus>('transcode-status', event => {
           setStatus(event.payload)
           setError(event.payload.error ?? null)
         })

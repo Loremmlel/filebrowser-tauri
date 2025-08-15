@@ -39,7 +39,7 @@ export const useThumbnailStatus = () => {
     // 监听缩略图状态更新事件
     const setupListener = async () => {
       try {
-        unlisten = await listen<ThumbnailStatus>('thumbnail-status-update', event => {
+        unlisten = await listen<ThumbnailStatus>('thumbnail-status', event => {
           setStatus(event.payload)
           setError(null)
         })
