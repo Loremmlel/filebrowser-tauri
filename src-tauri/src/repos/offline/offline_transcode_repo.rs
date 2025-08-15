@@ -1,8 +1,8 @@
+use once_cell::sync::Lazy;
 use std::{
     path::{Path, PathBuf},
     time::Duration,
 };
-use once_cell::sync::Lazy;
 use tauri::{AppHandle, Emitter};
 use tokio::{
     fs,
@@ -25,8 +25,10 @@ use crate::{
 static CURRENT_TASK: Mutex<Option<TranscodeTask>> = Mutex::const_new(None);
 static APP_HANDLE: Mutex<Option<AppHandle>> = Mutex::const_new(None);
 
-static DURATION_REGEX: Lazy<regex::Regex> = Lazy::new(|| regex::Regex::new(r"Duration: (\d+):(\d+):(\d+\.\d+)").unwrap());
-static TIME_REGEX: Lazy<regex::Regex> = Lazy::new(|| regex::Regex::new(r"time=(\d+):(\d+):(\d+\.\d+)").unwrap());
+static DURATION_REGEX: Lazy<regex::Regex> =
+    Lazy::new(|| regex::Regex::new(r"Duration: (\d+):(\d+):(\d+\.\d+)").unwrap());
+static TIME_REGEX: Lazy<regex::Regex> =
+    Lazy::new(|| regex::Regex::new(r"time=(\d+):(\d+):(\d+\.\d+)").unwrap());
 
 pub struct OfflineTranscodeRepo;
 
