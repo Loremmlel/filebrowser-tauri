@@ -32,7 +32,7 @@ export const YuzuVideoPlayer: React.FC<YuzuVideoPlayerProps> = ({ path, supportH
   const directVideoUrl = useMemo(
     () =>
       online
-        ? `${serverUrl}/video?path=${encodeURIComponent(path)}`
+        ? `${serverUrl}/direct-video?path=${encodeURIComponent(path)}`
         : convertFileSrc(`${baseDir}${path}`),
     [serverUrl, path, baseDir, online]
   )
